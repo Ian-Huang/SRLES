@@ -1,11 +1,9 @@
 #Unity
 Library
 Temp
-*.sln
 *.unityproj
 *.pidb
 *.userprefs
 *.suo
 obj
-*.sln
 Demo
