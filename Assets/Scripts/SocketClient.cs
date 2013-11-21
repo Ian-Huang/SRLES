@@ -5,6 +5,9 @@ using System.Diagnostics;
 using System;
 using System.Text;
 
+/// <summary>
+/// 連接語音辨識伺服器功能腳本
+/// </summary>
 public class SocketClient : MonoBehaviour
 {
     public int bufferSize;
@@ -28,7 +31,7 @@ public class SocketClient : MonoBehaviour
     void Awake()
     {
         this.process = new Process();
-        this.process.StartInfo.FileName = @"D:\Practice folder\Socket Test\SRLES\SocketServer\Debug\SocketServer.exe";
+        this.process.StartInfo.FileName = Application.dataPath + @"/SocketServer.exe";
         this.process.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
         this.process.Start();
     }
@@ -82,7 +85,6 @@ public class SocketClient : MonoBehaviour
 
     void OnGUI()
     {
-
         this.TestString = GUI.TextField(new Rect(50, 50, 200, 50), this.TestString);
         if (GUI.Button(this.rect, "發送訊息"))
         {
