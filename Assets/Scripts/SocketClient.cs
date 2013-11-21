@@ -77,7 +77,7 @@ public class SocketClient : MonoBehaviour
     private void EndReadCallback(IAsyncResult ar)
     {
         int bytesRead = this.myNetworkStream.EndRead(ar);
-        string reString = Encoding.ASCII.GetString(this.myBufferBytes, 0, bytesRead);
+        string reString = Encoding.UTF8.GetString(this.myBufferBytes, 0, bytesRead);
         print(reString);
         this.ReadDataInit();
     }
@@ -88,7 +88,7 @@ public class SocketClient : MonoBehaviour
         this.TestString = GUI.TextField(new Rect(50, 50, 200, 50), this.TestString);
         if (GUI.Button(this.rect, "發送訊息"))
         {
-            Byte[] myBytes = Encoding.ASCII.GetBytes(this.TestString);
+            Byte[] myBytes = Encoding.UTF8.GetBytes(this.TestString);
             this.myNetworkStream.Write(myBytes, 0, myBytes.Length);
         }
     }
@@ -98,6 +98,7 @@ public class SocketClient : MonoBehaviour
     /// </summary>
     void OnApplicationQuit()
     {
+        this.myTcpClient.Close();       //關閉連接Server的接口
         this.process.CloseMainWindow(); //關閉
 
     }
