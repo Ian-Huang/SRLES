@@ -6,4 +6,6 @@ Temp
 *.userprefs
 *.suo
 obj
+*.sln
+*.csproj
 Demo
