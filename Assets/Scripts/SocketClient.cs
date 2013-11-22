@@ -98,8 +98,7 @@ public class SocketClient : MonoBehaviour
     /// </summary>
     void OnApplicationQuit()
     {
-        this.myTcpClient.Close();       //關閉連接Server的接口
+        //this.myTcpClient.Close();       //關閉連接Server的接口
         this.process.CloseMainWindow(); //關閉
-
     }
 }

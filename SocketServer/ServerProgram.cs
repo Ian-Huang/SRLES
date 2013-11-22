@@ -1,100 +1,90 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Speech.Recognition;
+using System.Threading;
+using System.Text;
 
 namespace SocketServer
 {
+    /// <summary>
+    /// Description：
+    ///     語音伺服器物件
+    /// </summary>
     class ServerProgram
     {
-        private SpeechRecognitionEngine speechEngine;  //語音辨識引擎
-        private bool checkClientClosed = false;
-        private byte[] testByte = new byte[1];
+        private SpeechRecognitionEngine speechEngine;   //語音辨識引擎
+        private RecognizerInfo recognizerInfo = null;   //語音辨識引擎資訊
 
-        private Socket mySocket;
-
-        ~ServerProgram()
-        {
-            this.mySocket.Close();
-            if (this.speechEngine != null)
-            {
-                this.speechEngine.RecognizeAsyncCancel();
-                this.speechEngine.RecognizeAsyncStop();
-            }
-        }
+        private bool checkClientClosed = false;         //確認目前與Client連線狀態
+        private Socket mySocket;                        //Server Socket物件
 
         public static void Main(string[] args)
         {
             ServerProgram master = new ServerProgram();
 
+            //將語音辨識初始化設定獨立執行緒
             Thread SRInitThread = new Thread(new ThreadStart(master.CreateSpeechRecongnition));
             SRInitThread.Start();
 
             //建立監聽物件
             TcpListener myTcpListener = new TcpListener(System.Net.IPAddress.Parse("127.0.0.1"), 36000);
-            //啟動監聽
-            myTcpListener.Start();
+            myTcpListener.Start();  //啟動監聽
             Console.WriteLine("通訊埠 36000 等待用戶端連線...... !!");
-
             master.mySocket = myTcpListener.AcceptSocket();
+            Console.WriteLine("連線成功 !!");
             do
             {
                 try
                 {
-                    try
-                    {
-                        //使用Peek測試連線是否仍存在
-                        if (master.mySocket.Connected && master.mySocket.Poll(0, SelectMode.SelectRead))
-                            master.checkClientClosed = (master.mySocket.Receive(master.testByte, SocketFlags.Peek) == 0);
-                    }
-                    catch (Exception)
-                    {
-                        master.checkClientClosed = true;
-                    }
-
-                    if (!master.checkClientClosed)
-                    {
-                        int dataLength;
-                        Console.WriteLine("連線成功 !!");
-                        byte[] myBufferBytes = new byte[1000];
-                        //取得用戶端寫入的資料
-                        dataLength = master.mySocket.Receive(myBufferBytes);
-
-                        Console.WriteLine("接收到的資料長度 {0} \n ", dataLength.ToString());
-                        Console.WriteLine("取出用戶端寫入網路資料流的資料內容 :");
-                        Console.WriteLine(Encoding.UTF8.GetString(myBufferBytes, 0, dataLength) + "\n");
-
-                        //將接收到的資料回傳給用戶端
-                        master.mySocket.Send(myBufferBytes, dataLength, 0);
-                    }
-                    else
-                    {
-                        break;
-                    }
-                    Thread.Sleep(20);
+                    //使用Peek測試連線是否仍存在
+                    if (master.mySocket.Connected && master.mySocket.Poll(0, SelectMode.SelectRead))
+                        master.checkClientClosed = (master.mySocket.Receive(new byte[1], SocketFlags.Peek) == 0);
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
-                    break;
+                    master.checkClientClosed = true;    //Client關閉連線
+                    Console.WriteLine("連線測試Exception：" + e.Message);
                 }
-            } while (true);
+
+                if (!master.checkClientClosed)
+                {
+                    //取得用戶端寫入的資料
+                    int dataLength;
+                    byte[] myBufferBytes = new byte[1000];
+                    string ReceiveString;
+
+                    dataLength = master.mySocket.Receive(myBufferBytes);    //接收Client發送的訊息
+                    ReceiveString = Encoding.UTF8.GetString(myBufferBytes, 0, dataLength);  //Byte to String
+
+                    master.SendMessageToClient("回復Client端發送的訊息-" + ReceiveString);
+                }
+
+                Thread.Sleep(10);
+            } while (!master.checkClientClosed);
 
             Console.WriteLine("結束連線");
         }
 
+        /// <summary>
+        /// 創造語音辨識相關功能
+        /// </summary>
         private void CreateSpeechRecongnition()
         {
             //Initialize speech recognition    
             Console.WriteLine("語音相關物件初始化開始");
-            var recognizerInfo = (from a in SpeechRecognitionEngine.InstalledRecognizers()
+
+            try
+            {
+                recognizerInfo = (from a in SpeechRecognitionEngine.InstalledRecognizers()
                                   where a.Culture.Name == "en-US"
                                   select a).FirstOrDefault();
+            }
+            catch (Exception)
+            {
+                this.SendMessageToClient("語音辨識引擎設定錯誤");
+            }
 
             if (recognizerInfo != null)
             {
@@ -115,39 +105,74 @@ namespace SocketServer
                 //載入辨識字串
                 this.speechEngine.LoadGrammarAsync(grammar);
                 this.speechEngine.SpeechRecognized += SreSpeechRecognized;
-                this.speechEngine.SetInputToDefaultAudioDevice();
-                this.speechEngine.RecognizeAsync(RecognizeMode.Multiple);
+
+                try
+                {
+                    this.speechEngine.SetInputToDefaultAudioDevice();
+                    this.speechEngine.RecognizeAsync(RecognizeMode.Multiple);
+                }
+                catch (Exception)
+                {
+                    this.SendMessageToClient("麥克風裝置設定錯誤");
+                }
             }
+
             Console.WriteLine("語音相關物件初始化結束");
         }
 
+
+        /// <summary>
+        /// 當辨識到設定字串將呼叫此函式
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void SreSpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
             string message = "辨識單字：" + e.Result.Text + "準確度：" + e.Result.Confidence.ToString("0.00");
 
             Console.WriteLine(message);
+            this.SendMessageToClient(message);
+        }
 
-            Byte[] myBytes = Encoding.UTF8.GetBytes(message);
-            this.mySocket.Send(myBytes, myBytes.Length, 0);
+        /// <summary>
+        /// 傳送訊息到Client端
+        /// </summary>
+        /// <param name="message">訊息內容</param>
+        void SendMessageToClient(string message)
+        {
+            Byte[] myBytes = Encoding.UTF8.GetBytes(message);       //String to Byte
+            try
+            {
+                Console.WriteLine("對Client傳送： " + message);
+                this.mySocket.Send(myBytes, myBytes.Length, 0);     //送出到Client
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("傳送訊息Exception：" + e.Message);
+            }
+        }
 
-            //if (e.Result.Confidence < this.confidenceValue)//肯定度低於0.75，判為錯誤語句
-            //{
-            //    //this.textBlock1.Text = e.Result.Text.ToString();
-            //    return;
-            //}
+        /// <summary>
+        /// 解構元(釋放資源)
+        /// </summary>
+        ~ServerProgram()
+        {
+            try
+            {
+                //Server Socket 關閉
+                this.mySocket.Close();
 
-            //foreach (var name in imageNameList)
-            //{
-            //    if (name.Equals(e.Result.Text))
-            //    {
-            //        if (this.DeleteImage(name))
-            //        {
-            //            this.totalScore++;
-            //            ScoreText.Text = this.totalScore.ToString();
-            //            this.PlaySound(this.successSoundPlayer);
-            //        }
-            //    }
-            //}
+                //語音辨識引擎 關閉
+                if (this.speechEngine != null)
+                {
+                    this.speechEngine.RecognizeAsyncCancel();
+                    this.speechEngine.RecognizeAsyncStop();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("解構元Exception：" + e.Message);
+            }
         }
     }
 }
