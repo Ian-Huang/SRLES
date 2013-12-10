@@ -92,6 +92,8 @@ namespace SocketServer
                 Choices recognizerString = new Choices();
                 recognizerString.Add("test");
                 recognizerString.Add("apple");
+                recognizerString.Add("what are you doing");
+                recognizerString.Add("this is an apple");
 
                 GrammarBuilder grammarBuilder = new GrammarBuilder();
 
