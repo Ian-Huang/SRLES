@@ -32,15 +32,15 @@ public class SocketClient : MonoBehaviour
     {
         this.process = new Process();
         this.process.StartInfo.FileName = Application.dataPath + @"/SocketServer.exe";
-        this.process.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
+        this.process.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;  //輸出時記得改Hide
         this.process.Start();
     }
 
     // Use this for initialization
     void Start()
     {
-        this.ServerConnect();
-        this.ReadDataInit();
+        this.ServerConnect();       //對語音辨識伺服器進行連線
+        this.ReadServerResponse();  //接收Server的回應
     }
 
     void ServerConnect()
@@ -69,17 +69,24 @@ public class SocketClient : MonoBehaviour
 
     }
 
-    void ReadDataInit()
+    void ReadServerResponse()
     {
         this.myNetworkStream.BeginRead(this.myBufferBytes, 0, 1024, new AsyncCallback(this.EndReadCallback), null);
     }
 
     private void EndReadCallback(IAsyncResult ar)
     {
+        //解析Server的回應
         int bytesRead = this.myNetworkStream.EndRead(ar);
-        string reString = Encoding.UTF8.GetString(this.myBufferBytes, 0, bytesRead);
+        string reString = Encoding.UTF8.GetString(this.myBufferBytes, 0, bytesRead);    //Btye to String
+
         print(reString);
-        this.ReadDataInit();
+        switch (reString)
+        {
+            default:
+                break;
+        }
+        this.ReadServerResponse();  //再次等待Server的回應
     }
 
 
@@ -90,6 +97,17 @@ public class SocketClient : MonoBehaviour
         {
             Byte[] myBytes = Encoding.UTF8.GetBytes(this.TestString);
             this.myNetworkStream.Write(myBytes, 0, myBytes.Length);
+        }
+        if (GUI.Button(new Rect(50, 175, 200, 50), "設定單字"))
+        {
+            //-----發送訊息，讓語音伺服器開始設定辨識單字-----
+            string sendStr = "SettingWord:";    //功能設定字
+            foreach (var temp in GameManager.script.TextureCollection)
+                sendStr += (temp.name + ",");   //加入待辨識的字串
+
+            Byte[] myBytes = Encoding.UTF8.GetBytes(sendStr);       //String to Byte
+            this.myNetworkStream.Write(myBytes, 0, myBytes.Length); //發送至Server
+            //-----發送訊息，讓語音伺服器開始設定辨識單字-----
         }
     }
 
