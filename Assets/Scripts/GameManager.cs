@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     public ScreenRect Screenrect;
     public ScreenRect SafeScreenrect;
     public List<Object> TextureCollection;  //自AB讀取到的圖片清單
+    public List<GameObject> CurrentActivePictureList;
 
     void Awake()
     {
@@ -34,7 +35,7 @@ public class GameManager : MonoBehaviour
         this.Screenrect.left = leftbottom.x;
         this.Screenrect.right = righttop.x;
 
-        this.SafeScreenrect.top = righttop.y + 5;
+        this.SafeScreenrect.top = righttop.y + 6;
         this.SafeScreenrect.bottom = leftbottom.y;
         this.SafeScreenrect.left = leftbottom.x + 5;
         this.SafeScreenrect.right = righttop.x - 5;

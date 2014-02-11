@@ -10,6 +10,9 @@ using System.Text;
 /// </summary>
 public class SocketClient : MonoBehaviour
 {
+    private bool isReadingData = false; //確認是否開始進行分析字串
+    private string readString;          //接收Server傳送訊息的完整字串
+
     public int bufferSize;
     public string TestString;
     public Rect rect;
@@ -21,7 +24,6 @@ public class SocketClient : MonoBehaviour
     private Process process;
 
     byte[] myBufferBytes = new byte[1024];
-
 
     //宣告網路資料流變數
     private NetworkStream myNetworkStream;
@@ -66,7 +68,26 @@ public class SocketClient : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //透過接收Server端發送訊息，進行字串分析
+        if (this.isReadingData)
+        {
+            print(this.readString);
+            //字串判定
+            string[] reStringSplit = this.readString.Split(':'); //動作字串分析 [0] ，以":"做區隔
+            switch (reStringSplit[0])
+            {
+                case "DeletePicture":     //刪除圖片(接收Server發送的刪除單字)
+                    //將Server傳送的辨識字進行搜尋，如在場景上則進行刪除動作
+                    GameObject tempObj = GameManager.script.CurrentActivePictureList.Find((obj) => { return obj.name == reStringSplit[1]; });
+                    if (tempObj != null)
+                        tempObj.GetComponent<PictureController>().DestroySelf();
+                    break;
+                default:
+                    break;
+            }
 
+            this.isReadingData = false; //每次進行完後，關閉分析
+        }
     }
 
     void ReadServerResponse()
@@ -78,14 +99,9 @@ public class SocketClient : MonoBehaviour
     {
         //解析Server的回應
         int bytesRead = this.myNetworkStream.EndRead(ar);
-        string reString = Encoding.UTF8.GetString(this.myBufferBytes, 0, bytesRead);    //Btye to String
+        this.readString = Encoding.UTF8.GetString(this.myBufferBytes, 0, bytesRead);    //Btye to String
+        this.isReadingData = true;  //開啟Update()，進行字串處理
 
-        print(reString);
-        switch (reString)
-        {
-            default:
-                break;
-        }
         this.ReadServerResponse();  //再次等待Server的回應
     }
 

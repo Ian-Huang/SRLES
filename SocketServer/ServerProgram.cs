@@ -179,9 +179,12 @@ namespace SocketServer
         void SreSpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
             string message = "辨識單字：" + e.Result.Text + "準確度：" + e.Result.Confidence.ToString("0.00");
-
             Console.WriteLine(message);
-            this.SendMessageToClient(message);
+
+            string sendStr = "DeletePicture:";    //功能設定字(使Client刪除辨識單字圖片)
+            sendStr += e.Result.Text;
+
+            this.SendMessageToClient(sendStr);
         }
 
         /// <summary>
