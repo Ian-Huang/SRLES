@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     public ScreenRect Screenrect;
     public ScreenRect SafeScreenrect;
     public List<Object> TextureCollection;  //自AB讀取到的圖片清單
-    public List<GameObject> CurrentActivePictureList;
+    public List<GameObject> CurrentActivePictureList;   //將當前在場景上的圖片物件儲存進容器中
 
     void Awake()
     {
