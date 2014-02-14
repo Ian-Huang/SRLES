@@ -118,7 +118,7 @@ public class SocketClient : MonoBehaviour
         {
             //-----發送訊息，讓語音伺服器開始設定辨識單字-----
             string sendStr = "SettingWord:";    //功能設定字
-            foreach (var temp in GameManager.script.TextureCollection)
+            foreach (var temp in ABTextureManager.script.TextureCollection)
                 sendStr += (temp.name + ",");   //加入待辨識的字串
 
             Byte[] myBytes = Encoding.UTF8.GetBytes(sendStr);       //String to Byte

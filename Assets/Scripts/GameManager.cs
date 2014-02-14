@@ -9,11 +9,9 @@ public class GameManager : MonoBehaviour
     public GameObject PicturePrefab;    //生成物件Prefab
     public float CreateTime;            //生成物件間隔
 
-    public bool isLoading = true;       //讀取狀態flag
-
     public ScreenRect Screenrect;
     public ScreenRect SafeScreenrect;
-    public List<Object> TextureCollection;  //自AB讀取到的圖片清單
+
     public List<GameObject> CurrentActivePictureList;   //將當前在場景上的圖片物件儲存進容器中
 
     void Awake()
@@ -24,8 +22,6 @@ public class GameManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        StartCoroutine(LoadAssetBundle());
-
         //-----擷取可視螢幕範圍-----
         Vector3 leftbottom = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, 0));
         Vector3 righttop = Camera.main.ViewportToWorldPoint(new Vector3(1, 1, 0));
@@ -47,7 +43,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!this.isLoading)
+        if (!ABTextureManager.script.ABisFinish)
         {
 
         }
@@ -62,24 +58,6 @@ public class GameManager : MonoBehaviour
         Vector3 createPos = new Vector3(Random.Range(this.SafeScreenrect.left, this.SafeScreenrect.right), this.SafeScreenrect.top, 0);
 
         Instantiate(this.PicturePrefab, createPos, this.PicturePrefab.transform.rotation);
-    }
-
-    /// <summary>
-    /// 載入存有圖片的AssetBundle
-    /// </summary>
-    /// <returns></returns>
-    IEnumerator LoadAssetBundle()
-    {
-        this.isLoading = true;  //檔案讀取flag (正在讀取...)
-
-        WWW www = new WWW(@"file:///" + Application.dataPath + @"/all.assetBunldes");
-
-        yield return www;       //等待下載完成
-
-        this.TextureCollection = new List<Object>(www.assetBundle.LoadAll());   //將AB中的圖片載入到List清單
-        www.assetBundle.Unload(false);
-
-        this.isLoading = false; //檔案讀取flag (讀取完畢...)
     }
 
     [System.Serializable]

@@ -8,17 +8,17 @@ public class PictureController : MonoBehaviour
     // Use this for initialization
     IEnumerator Start()
     {
-        yield return GameManager.script.isLoading;      //確認GameManager 圖庫載入完畢後，才開始動作
-        int num = Random.Range(0, GameManager.script.TextureCollection.Count);
-        this.gameObject.name = GameManager.script.TextureCollection[num].name;      //將物件名稱命名為辨識物名
-        this.renderer.material.mainTexture = GameManager.script.TextureCollection[num] as Texture;
+        yield return ABTextureManager.script.ABisFinish;      //確認GameManager 圖庫載入完畢後，才開始動作
+        int num = Random.Range(0, ABTextureManager.script.TextureCollection.Count);
+        this.gameObject.name = ABTextureManager.script.TextureCollection[num].name;      //將物件名稱命名為辨識物名
+        this.renderer.material.mainTexture = ABTextureManager.script.TextureCollection[num] as Texture;
         GameManager.script.CurrentActivePictureList.Add(this.gameObject);   //將物件儲存到容器
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!GameManager.script.isLoading)
+        if (!ABTextureManager.script.ABisFinish)
         {
             this.transform.Translate(new Vector3(0, 0, this.DownSpeed) * Time.deltaTime);
 
