@@ -168,7 +168,10 @@ public class EditUI : MonoBehaviour
                 {
                     this.ClassListTogglesMap[key] = GUILayout.Toggle(this.ClassListTogglesMap[key], key);
                     GUILayout.FlexibleSpace();
-                    GUILayout.Button("編輯");
+                    if (GUILayout.Button("編輯"))
+                    {
+
+                    }
                 }
                 GUILayout.EndHorizontal();
                 //------一個課程的架構------
