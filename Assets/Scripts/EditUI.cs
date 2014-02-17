@@ -24,8 +24,8 @@ public class EditUI : MonoBehaviour
 
     public Vector2 ClassInfoScrollViewPosition; //課程資訊滾輪位置
     public Dictionary<Object, bool> ClassInfoTogglesMap = new Dictionary<Object, bool>();   //課程資訊對照表
-    public string ModifyClassNameString = "";         //課程名稱修改用字串
-    public string CurrentEditClassName;
+    public string ModifyClassNameString;        //課程名稱修改用字串
+    public string CurrentEditClassName;         //當前選擇編輯的課程名稱
 
     void Start()
     {
@@ -44,6 +44,7 @@ public class EditUI : MonoBehaviour
         yield return XmlManager.script.XmlRoadFinish;    //確認XmlManager XML file是否已經載入完成
 
         //將XML File的課程單字載入到課程資訊單字映照表(ClassInfoTogglesMap)
+        this.ClassInfoTogglesMap.Clear();
         foreach (XmlNode node in XmlManager.script.ClassListNode.SelectSingleNode(CurrentEditClassName).ChildNodes)
         {
             Object obj = ABTextureManager.script.TextureCollection.Find((Object temp) => { return temp.name == node.Name; });
@@ -61,6 +62,7 @@ public class EditUI : MonoBehaviour
         yield return XmlManager.script.XmlRoadFinish;    //確認XmlManager XML file是否已經載入完成
 
         //將XML File的課程清單載入到課程清單映照表(ClassListToggleMap)
+        this.ClassListTogglesMap.Clear();
         foreach (XmlNode node in XmlManager.script.ClassListNode.ChildNodes)
             this.ClassListTogglesMap.Add(node.Name, false);
     }
@@ -108,8 +110,9 @@ public class EditUI : MonoBehaviour
             this.ModifyClassNameString = GUILayout.TextField(this.ModifyClassNameString, 10);     //課程名稱修改用字串          
             if (GUILayout.Button("修改課程名", GUILayout.ExpandWidth(false)))
             {
-                XmlManager.script.ModifyClassName(this.CurrentEditClassName, this.ModifyClassNameString);
-                this.CurrentEditClassName = this.ModifyClassNameString;
+                XmlManager.script.ModifyClassName(this.CurrentEditClassName, this.ModifyClassNameString);   //新舊名稱修改取代
+                this.CurrentEditClassName = this.ModifyClassNameString; //將當前顯示的視窗名更正為修改後的名稱
+                StartCoroutine(this.CreateClassListToggleMap());    //重新讀取映照檔
             }
         }
         GUILayout.EndHorizontal();
@@ -134,18 +137,20 @@ public class EditUI : MonoBehaviour
 
         GUILayout.BeginHorizontal();
         {
-            if (GUILayout.Button("儲存"))
+            if (GUILayout.Button("儲存課程"))
             {
                 Dictionary<Object, bool> tempDir = new Dictionary<Object, bool>(this.ClassInfoTogglesMap);  //不可直接對Dictionary做讀取，須建立一個暫存
-                //將目前所選擇單字儲存至XML File
+                List<string> wordList = new List<string>();
+
+                //將目前所選擇單字儲存至wordList
                 foreach (var key in tempDir.Keys)
-                {
-                    //新增單字資訊至XML File
-                    XmlManager.script.CreateNewWordToClass(this.CurrentEditClassName, key.name);
-                }
+                    wordList.Add(key.name);
+
+                //新增單字資訊至XML File
+                XmlManager.script.CreateNewWordToClass(this.CurrentEditClassName, wordList.ToArray());
 
             }
-            if (GUILayout.Button("刪除"))
+            if (GUILayout.Button("刪除單字"))
             {
                 Dictionary<Object, bool> tempDir = new Dictionary<Object, bool>(this.ClassInfoTogglesMap);  //不可直接對Dictionary做讀取，須建立一個暫存
                 //確認對照表，將被勾選的物件刪除

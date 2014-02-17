@@ -52,6 +52,50 @@ public class XmlManager : MonoBehaviour
 
         this.XmlRoadFinish = true;
     }
+    
+    /// <summary>
+    /// 課程名稱修改
+    /// </summary>
+    /// <param name="oldClassName">舊節點名稱</param>
+    /// <param name="newClassName">新節點名稱</param>
+    public void ModifyClassName(string oldClassName, string newClassName)
+    {
+        //找出要修改的舊節點
+        XmlNode oldNode = this.ClassListNode.SelectSingleNode(oldClassName);
+
+        //產生要取代的新節點
+        XmlElement newNode = this.doc.CreateElement(newClassName);
+        //將舊節點內部xml text複製到新節點
+        newNode.InnerXml = oldNode.InnerXml;
+
+        //新舊取代
+        this.ClassListNode.ReplaceChild(newNode, oldNode);
+
+        this.doc.Save(this.DocumentName);   //存檔
+    }
+
+    /// <summary>
+    /// 儲存新單字到指定課程
+    /// </summary>
+    /// <param name="className">課程節點名</param>
+    /// <param name="words">單字組</param>
+    public void CreateNewWordToClass(string className, string[] words)
+    {
+        //找出要修改的課程節點
+        XmlNode classNode = this.ClassListNode.SelectSingleNode(className);
+
+        //修改後的課程節點(更換課程單字)
+        XmlNode newClassNode = this.doc.CreateElement(className);
+        foreach (string word in words)
+        {
+            XmlNode node = this.doc.CreateElement(word);
+            newClassNode.AppendChild(node);
+        }
+        //取代舊的課程節點
+        this.ClassListNode.ReplaceChild(newClassNode, classNode);
+        this.doc.Save(this.DocumentName);   //存檔
+    }
+
 
     /// <summary>
     /// 加入新課程節點
@@ -63,31 +107,6 @@ public class XmlManager : MonoBehaviour
         this.ClassListNode.AppendChild(classNode);
 
         this.doc.Save(this.DocumentName);   //存檔
-    }
-
-    public void ModifyClassName(string oldClassName, string newClassName)
-    {
-        //未完成
-        XmlNode classNode = this.ClassListNode.SelectSingleNode(oldClassName);
-        //print(classNode.Value);
-    }
-
-    /// <summary>
-    /// 加入新單字節點到指定課程節點
-    /// </summary>
-    /// <param name="className">課程節點名</param>
-    /// <param name="wordName">單字名</param>
-    public void CreateNewWordToClass(string className, string wordName)
-    {
-        XmlNode classNode = this.ClassListNode.SelectSingleNode(className);
-
-        if (classNode.SelectSingleNode(wordName) == null)   //不重複儲存同名節點
-        {
-            XmlElement wordNode = this.doc.CreateElement(wordName);
-            classNode.AppendChild(wordNode);
-
-            this.doc.Save(this.DocumentName);   //存檔
-        }
     }
 
     /// <summary>
