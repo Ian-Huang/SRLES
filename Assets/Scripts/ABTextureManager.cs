@@ -6,7 +6,7 @@ public class ABTextureManager : MonoBehaviour
 {
     public static ABTextureManager script;
 
-    public bool ABisFinish = true;          //讀取狀態flag
+    public bool ABRoadFinish = false;          //讀取狀態flag
     public List<Object> TextureCollection;  //自AB讀取到的圖片清單
 
     void Awake()
@@ -25,13 +25,21 @@ public class ABTextureManager : MonoBehaviour
         StartCoroutine(RunLoadAssetBundle());
     }
 
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.E))
+            Application.LoadLevel(0);
+        if (Input.GetKeyDown(KeyCode.G))
+            Application.LoadLevel(1);
+    }
+
     /// <summary>
     /// 載入AssetBundle圖庫函式
     /// </summary>
     /// <returns></returns>
     IEnumerator RunLoadAssetBundle()
     {
-        this.ABisFinish = true;  //檔案讀取flag (正在讀取...)
+        this.ABRoadFinish = false;  //檔案讀取flag (正在讀取...)
 
         WWW www = new WWW(@"file:///" + Application.dataPath + @"/all.assetBunldes");
 
@@ -40,6 +48,6 @@ public class ABTextureManager : MonoBehaviour
         this.TextureCollection = new List<Object>(www.assetBundle.LoadAll());   //將AB中的圖片載入到List清單
         www.assetBundle.Unload(false);
 
-        this.ABisFinish = false; //檔案讀取flag (讀取完畢...)
+        this.ABRoadFinish = true; //檔案讀取flag (讀取完畢...)
     }
 }

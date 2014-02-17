@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml;
 
 [ExecuteInEditMode]
 public class EditUI : MonoBehaviour
@@ -23,11 +24,45 @@ public class EditUI : MonoBehaviour
 
     public Vector2 ClassInfoScrollViewPosition; //課程資訊滾輪位置
     public Dictionary<Object, bool> ClassInfoTogglesMap = new Dictionary<Object, bool>();   //課程資訊對照表
-    public string ClassNameString = "";         //課程名稱修改用字串
+    public string ModifyClassNameString = "";         //課程名稱修改用字串
+    public string CurrentEditClassName;
 
     void Start()
     {
+        StartCoroutine(this.CreateClassListToggleMap());
+
         StartCoroutine(this.CreateWordDataToggleMap());
+    }
+
+    /// <summary>
+    /// 生成課程資訊單字映照表
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator CreateClassInfoTogglesMap()
+    {
+        yield return XmlManager.script;   //確認XmlManager script是否存在  
+        yield return XmlManager.script.XmlRoadFinish;    //確認XmlManager XML file是否已經載入完成
+
+        //將XML File的課程單字載入到課程資訊單字映照表(ClassInfoTogglesMap)
+        foreach (XmlNode node in XmlManager.script.ClassListNode.SelectSingleNode(CurrentEditClassName).ChildNodes)
+        {
+            Object obj = ABTextureManager.script.TextureCollection.Find((Object temp) => { return temp.name == node.Name; });
+            this.ClassInfoTogglesMap.Add(obj, false);
+        }
+    }
+
+    /// <summary>
+    /// 生成課程清單映照表
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator CreateClassListToggleMap()
+    {
+        yield return XmlManager.script;   //確認XmlManager script是否存在  
+        yield return XmlManager.script.XmlRoadFinish;    //確認XmlManager XML file是否已經載入完成
+
+        //將XML File的課程清單載入到課程清單映照表(ClassListToggleMap)
+        foreach (XmlNode node in XmlManager.script.ClassListNode.ChildNodes)
+            this.ClassListTogglesMap.Add(node.Name, false);
     }
 
     /// <summary>
@@ -37,9 +72,9 @@ public class EditUI : MonoBehaviour
     IEnumerator CreateWordDataToggleMap()
     {
         yield return ABTextureManager.script;   //確認ABTextureManager script是否存在  
-        yield return !ABTextureManager.script.ABisFinish;    //確認ABTextureManager AB資源是否已經載入完成
+        yield return ABTextureManager.script.ABRoadFinish;    //確認ABTextureManager AB資源是否已經載入完成
 
-        //將AB所有的圖檔載入致單字庫映照表
+        //將AB所有的圖檔載入到單字庫映照表(WordDataToggleMap)
         foreach (var temp in ABTextureManager.script.TextureCollection)
             this.WordDataTogglesMap.Add(temp, false);
     }
@@ -55,7 +90,7 @@ public class EditUI : MonoBehaviour
         this.WordDataWindowRect = GUILayout.Window((int)WindowID.WordDataWindow, this.WordDataWindowRect, this.WordDataWindow, "單字庫");
 
         //課程資訊視窗
-        this.ClassInfoWindowRect = GUILayout.Window((int)WindowID.ClassInfoWindow, this.ClassInfoWindowRect, this.ClassInfoWindow, "課程資訊");
+        this.ClassInfoWindowRect = GUILayout.Window((int)WindowID.ClassInfoWindow, this.ClassInfoWindowRect, this.ClassInfoWindow, this.CurrentEditClassName);
 
         //提醒視窗
         //this.HintWindowRect = GUILayout.Window(1, this.HintWindowRect, this.HintWindow, "提醒");
@@ -70,10 +105,11 @@ public class EditUI : MonoBehaviour
         //-------將目前編輯的課程重新命名-------
         GUILayout.BeginHorizontal();
         {
-            this.ClassNameString = GUILayout.TextField(this.ClassNameString, 10);     //課程名稱修改用字串          
+            this.ModifyClassNameString = GUILayout.TextField(this.ModifyClassNameString, 10);     //課程名稱修改用字串          
             if (GUILayout.Button("修改課程名", GUILayout.ExpandWidth(false)))
             {
-                //待補，未完成
+                XmlManager.script.ModifyClassName(this.CurrentEditClassName, this.ModifyClassNameString);
+                this.CurrentEditClassName = this.ModifyClassNameString;
             }
         }
         GUILayout.EndHorizontal();
@@ -82,7 +118,7 @@ public class EditUI : MonoBehaviour
         this.ClassInfoScrollViewPosition = GUILayout.BeginScrollView(this.ClassInfoScrollViewPosition);
         {
             if (ABTextureManager.script)    //確認ABTextureManager script是否存在        
-                if (!ABTextureManager.script.ABisFinish)    //確認ABTextureManager AB資源是否已經載入完成
+                if (ABTextureManager.script.ABRoadFinish)    //確認ABTextureManager AB資源是否已經載入完成
                 {
                     Dictionary<Object, bool> tempDir = new Dictionary<Object, bool>(this.ClassInfoTogglesMap);  //不可直接對Dictionary做讀取，須建立一個暫存
                     foreach (var key in tempDir.Keys)
@@ -95,6 +131,35 @@ public class EditUI : MonoBehaviour
                 }
         }
         GUILayout.EndScrollView();
+
+        GUILayout.BeginHorizontal();
+        {
+            if (GUILayout.Button("儲存"))
+            {
+                Dictionary<Object, bool> tempDir = new Dictionary<Object, bool>(this.ClassInfoTogglesMap);  //不可直接對Dictionary做讀取，須建立一個暫存
+                //將目前所選擇單字儲存至XML File
+                foreach (var key in tempDir.Keys)
+                {
+                    //新增單字資訊至XML File
+                    XmlManager.script.CreateNewWordToClass(this.CurrentEditClassName, key.name);
+                }
+
+            }
+            if (GUILayout.Button("刪除"))
+            {
+                Dictionary<Object, bool> tempDir = new Dictionary<Object, bool>(this.ClassInfoTogglesMap);  //不可直接對Dictionary做讀取，須建立一個暫存
+                //確認對照表，將被勾選的物件刪除
+                foreach (var key in tempDir.Keys)
+                {
+                    if (this.ClassInfoTogglesMap[key])
+                    {
+                        //將ClassInfoTogglesMap中對應的課程刪除
+                        this.ClassInfoTogglesMap.Remove(key);
+                    }
+                }
+            }
+        }
+        GUILayout.EndHorizontal();
     }
 
     /// <summary>
@@ -115,7 +180,7 @@ public class EditUI : MonoBehaviour
         this.WordDataScrollViewPosition = GUILayout.BeginScrollView(this.WordDataScrollViewPosition);
         {
             if (ABTextureManager.script)    //確認ABTextureManager script是否存在        
-                if (!ABTextureManager.script.ABisFinish)    //確認ABTextureManager AB資源是否已經載入完成
+                if (ABTextureManager.script.ABRoadFinish)    //確認ABTextureManager AB資源是否已經載入完成
                 {
                     Dictionary<Object, bool> tempDir = new Dictionary<Object, bool>(this.WordDataTogglesMap);  //不可直接對Dictionary做讀取，須建立一個暫存
                     foreach (var key in tempDir.Keys)
@@ -133,7 +198,7 @@ public class EditUI : MonoBehaviour
         GUILayout.EndScrollView();
 
         //將在單字庫所選的單字新增至目前編輯的課程
-        if (GUILayout.Button("新增至課程", GUILayout.ExpandWidth(false)))
+        if (GUILayout.Button("新增至課程"))
         {
             Dictionary<Object, bool> tempDir = new Dictionary<Object, bool>(this.WordDataTogglesMap);  //不可直接對Dictionary做讀取，須建立一個暫存
 
@@ -170,7 +235,8 @@ public class EditUI : MonoBehaviour
                     GUILayout.FlexibleSpace();
                     if (GUILayout.Button("編輯"))
                     {
-
+                        this.CurrentEditClassName = this.ModifyClassNameString = key;
+                        StartCoroutine(this.CreateClassInfoTogglesMap());
                     }
                 }
                 GUILayout.EndHorizontal();
@@ -188,6 +254,9 @@ public class EditUI : MonoBehaviour
                 while (this.ClassListTogglesMap.ContainsKey("未命名課程" + this.CreateClassCount))
                     this.CreateClassCount++;
 
+                //新增資訊至XML File
+                XmlManager.script.CreateNewClassToList("未命名課程" + this.CreateClassCount);
+
                 //將新增課程至對照表
                 this.ClassListTogglesMap.Add("未命名課程" + this.CreateClassCount, false);
                 //將清單滾輪移動至最下方
@@ -200,7 +269,13 @@ public class EditUI : MonoBehaviour
                 foreach (var key in tempDir.Keys)
                 {
                     if (this.ClassListTogglesMap[key])
+                    {
+                        //將XML File中對應的課程刪除
+                        XmlManager.script.DeleteClassFromList(key);
+
+                        //將ClassListTogglesMap中對應的課程刪除
                         this.ClassListTogglesMap.Remove(key);
+                    }
                 }
             }
             //-------課程清單"新增"、"刪除"兩個Button設置-------
