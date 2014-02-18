@@ -128,7 +128,7 @@ public class EditUI : MonoBehaviour
                     {
                         //------單字庫一個單字的架構------                        
                         GUIContent content = new GUIContent(key.name, key as Texture);  //圖+文字內容
-                        this.ClassInfoTogglesMap[key] = GUILayout.Toggle(this.ClassInfoTogglesMap[key], content, GUILayout.Height(50));   //因圖片太大，須設定大小                           
+                        this.ClassInfoTogglesMap[key] = GUILayout.Toggle(this.ClassInfoTogglesMap[key], content, GUILayout.Height(70));   //因圖片太大，須設定大小                           
                         //------單字庫一個單字的架構------
                     }
                 }
@@ -194,7 +194,7 @@ public class EditUI : MonoBehaviour
                         {
                             //------單字庫一個單字的架構------                        
                             GUIContent content = new GUIContent(key.name, key as Texture);  //圖+文字內容
-                            this.WordDataTogglesMap[key] = GUILayout.Toggle(this.WordDataTogglesMap[key], content, GUILayout.Height(50));   //因圖片太大，須設定大小                           
+                            this.WordDataTogglesMap[key] = GUILayout.Toggle(this.WordDataTogglesMap[key], content, GUILayout.Height(70));   //因圖片太大，須設定大小                           
                             //------單字庫一個單字的架構------
                         }
                     }
