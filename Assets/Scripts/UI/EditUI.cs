@@ -29,8 +29,9 @@ public class EditUI : MonoBehaviour
 
     void Start()
     {
+        //先行載入課程清單資訊
         StartCoroutine(this.CreateClassListToggleMap());
-
+        //先行載入單字庫資訊
         StartCoroutine(this.CreateWordDataToggleMap());
     }
 
