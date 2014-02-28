@@ -22,6 +22,7 @@ public class ReadyGameUI : MonoBehaviour
     public string ModifyClassNameString;        //課程名稱修改用字串
     public string CurrentEditClassName;         //當前選擇編輯的課程名稱
 
+    private string[] classListArrary = new string[0];   //儲存課程清單矩陣
 
     void Start()
     {
@@ -42,6 +43,36 @@ public class ReadyGameUI : MonoBehaviour
         this.ClassListTogglesMap.Clear();
         foreach (XmlNode node in XmlManager.script.ClassListNode.ChildNodes)
             this.ClassListTogglesMap.Add(node.Name, false);
+
+        this.classListArrary = new string[this.ClassListTogglesMap.Keys.Count];
+        this.ClassListTogglesMap.Keys.CopyTo(classListArrary, 0);
+    }
+
+    /// <summary>
+    /// 生成課程資訊單字映照表
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator CreateClassInfoTogglesMap()
+    {
+        yield return XmlManager.script;   //確認XmlManager script是否存在  
+        yield return XmlManager.script.XmlRoadFinish;    //確認XmlManager XML file是否已經載入完成
+
+        //將XML File的課程單字載入到課程資訊單字映照表(ClassInfoTogglesMap)
+        this.ClassInfoTogglesMap.Clear();
+        foreach (XmlNode node in XmlManager.script.ClassListNode.SelectSingleNode(CurrentEditClassName).ChildNodes)
+        {
+            Object obj = ABTextureManager.script.TextureCollection.Find((Object temp) => { return temp.name == node.Name; });
+            this.ClassInfoTogglesMap.Add(obj, false);
+        }
+    }
+
+    void Update()
+    {
+        if (this.ChooseClassIndex != -1)
+        {
+            this.CurrentEditClassName = this.classListArrary[this.ChooseClassIndex];
+            StartCoroutine(this.CreateClassInfoTogglesMap());
+        }
     }
 
     void OnGUI()
@@ -53,8 +84,6 @@ public class ReadyGameUI : MonoBehaviour
 
         //課程資訊視窗
         this.ClassInfoWindowRect = GUILayout.Window((int)WindowID.ClassInfoWindow, this.ClassInfoWindowRect, this.ClassInfoWindow, this.CurrentEditClassName);
-
-
     }
 
     /// <summary>
@@ -92,11 +121,10 @@ public class ReadyGameUI : MonoBehaviour
     {
         this.ClassListScrollViewPosition = GUILayout.BeginScrollView(this.ClassListScrollViewPosition);
         {
-            Dictionary<string, bool> tempDir = new Dictionary<string, bool>(this.ClassListTogglesMap);  //不可直接對Dictionary做讀取，須建立一個暫存
-            string[] tempStr = new string[tempDir.Keys.Count];
-            tempDir.Keys.CopyTo(tempStr, 0);
 
-            this.ChooseClassIndex = GUILayout.SelectionGrid(this.ChooseClassIndex, tempStr, 1);
+            this.ChooseClassIndex = GUILayout.SelectionGrid(this.ChooseClassIndex, this.classListArrary, 1);
+
+
         }
         GUILayout.EndScrollView();
     }
