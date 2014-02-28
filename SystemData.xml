@@ -1,9 +1,20 @@
 <ClassList>
   <未命名課程1>
     <snake />
-    <soccer />
     <zebra />
+    <cake />
+    <goat />
+    <lion />
+    <strawberry />
   </未命名課程1>
-  <未命名課程2 />
+  <未命名課程2>
+    <apple />
+    <book />
+    <dog />
+    <goat />
+    <lemon />
+    <strawberry />
+    <zebra />
+  </未命名課程2>
   <未命名課程3 />
 </ClassList>

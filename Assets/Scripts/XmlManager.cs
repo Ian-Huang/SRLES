@@ -45,14 +45,11 @@ public class XmlManager : MonoBehaviour
         else
             this.doc.Load(this.DocumentName);
 
-        //yield return ABTextureManager.script;   //確認ABTextureManager script是否存在  
-        //yield return ABTextureManager.script.ABRoadFinish;    //確認ABTextureManager AB資源是否已經載入完成
-
         this.ClassListNode = this.doc.SelectSingleNode("ClassList");   //課程清單主節點        
 
         this.XmlRoadFinish = true;
     }
-    
+
     /// <summary>
     /// 課程名稱修改
     /// </summary>

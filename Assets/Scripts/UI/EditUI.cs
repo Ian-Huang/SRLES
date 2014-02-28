@@ -41,8 +41,11 @@ public class EditUI : MonoBehaviour
     /// <returns></returns>
     IEnumerator CreateClassInfoTogglesMap()
     {
-        yield return XmlManager.script;   //確認XmlManager script是否存在  
-        yield return XmlManager.script.XmlRoadFinish;    //確認XmlManager XML file是否已經載入完成
+        while (!XmlManager.script)     //確認XmlManager script是否存在  
+            yield return null;
+
+        while (!XmlManager.script.XmlRoadFinish)    //確認XmlManager XML file是否已經載入完成
+            yield return null;
 
         //將XML File的課程單字載入到課程資訊單字映照表(ClassInfoTogglesMap)
         this.ClassInfoTogglesMap.Clear();
@@ -59,8 +62,11 @@ public class EditUI : MonoBehaviour
     /// <returns></returns>
     IEnumerator CreateClassListToggleMap()
     {
-        yield return XmlManager.script;   //確認XmlManager script是否存在  
-        yield return XmlManager.script.XmlRoadFinish;    //確認XmlManager XML file是否已經載入完成
+        while (!XmlManager.script)     //確認XmlManager script是否存在  
+            yield return null;
+
+        while (!XmlManager.script.XmlRoadFinish)    //確認XmlManager XML file是否已經載入完成
+            yield return null;
 
         //將XML File的課程清單載入到課程清單映照表(ClassListToggleMap)
         this.ClassListTogglesMap.Clear();
@@ -74,8 +80,11 @@ public class EditUI : MonoBehaviour
     /// <returns></returns>
     IEnumerator CreateWordDataToggleMap()
     {
-        yield return ABTextureManager.script;   //確認ABTextureManager script是否存在  
-        yield return ABTextureManager.script.ABRoadFinish;    //確認ABTextureManager AB資源是否已經載入完成
+        while (!ABTextureManager.script)     //確認ABTextureManager script是否存在  
+            yield return null;
+
+        while (!ABTextureManager.script.ABRoadFinish)   //確認ABTextureManager AB資源是否已經載入完成
+            yield return null;
 
         //將AB所有的圖檔載入到單字庫映照表(WordDataToggleMap)
         foreach (var temp in ABTextureManager.script.TextureCollection)
@@ -127,10 +136,10 @@ public class EditUI : MonoBehaviour
                     Dictionary<Object, bool> tempDir = new Dictionary<Object, bool>(this.ClassInfoTogglesMap);  //不可直接對Dictionary做讀取，須建立一個暫存
                     foreach (var key in tempDir.Keys)
                     {
-                        //------單字庫一個單字的架構------                        
+                        //------一個單字的架構------                        
                         GUIContent content = new GUIContent(key.name, key as Texture);  //圖+文字內容
                         this.ClassInfoTogglesMap[key] = GUILayout.Toggle(this.ClassInfoTogglesMap[key], content, GUILayout.Height(70));   //因圖片太大，須設定大小                           
-                        //------單字庫一個單字的架構------
+                        //------一個單字的架構------
                     }
                 }
         }

@@ -8,7 +8,9 @@ public class PictureController : MonoBehaviour
     // Use this for initialization
     IEnumerator Start()
     {
-        yield return ABTextureManager.script.ABRoadFinish;      //確認GameManager 圖庫載入完畢後，才開始動作
+        while (!ABTextureManager.script.ABRoadFinish)     //確認GameManager 圖庫載入完畢後，才開始動作
+            yield return null;
+
         int num = Random.Range(0, ABTextureManager.script.TextureCollection.Count);
         this.gameObject.name = ABTextureManager.script.TextureCollection[num].name;      //將物件名稱命名為辨識物名
         this.renderer.material.mainTexture = ABTextureManager.script.TextureCollection[num] as Texture;
