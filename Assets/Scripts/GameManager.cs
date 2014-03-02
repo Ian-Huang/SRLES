@@ -36,7 +36,10 @@ public class GameManager : MonoBehaviour
         this.SafeScreenrect.left = leftbottom.x + 5;
         this.SafeScreenrect.right = righttop.x - 5;
         //-----擷取可視螢幕範圍-----
+    }
 
+    public void StartCreatePicture()
+    {
         InvokeRepeating("CreatePicture", 0.1f, this.CreateTime);    //產生圖片設定，固定間隔
     }
 

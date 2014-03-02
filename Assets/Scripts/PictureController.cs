@@ -11,9 +11,10 @@ public class PictureController : MonoBehaviour
         while (!ABTextureManager.script.ABRoadFinish)     //確認GameManager 圖庫載入完畢後，才開始動作
             yield return null;
 
-        int num = Random.Range(0, ABTextureManager.script.TextureCollection.Count);
-        this.gameObject.name = ABTextureManager.script.TextureCollection[num].name;      //將物件名稱命名為辨識物名
-        this.renderer.material.mainTexture = ABTextureManager.script.TextureCollection[num] as Texture;
+        Random.seed = (int)Time.time;
+        int num = Random.Range(0, ABTextureManager.script.ChooseClassWordCollection.Count);
+        this.gameObject.name = ABTextureManager.script.ChooseClassWordCollection[num].name;      //將物件名稱命名為辨識物名
+        this.renderer.material.mainTexture = ABTextureManager.script.ChooseClassWordCollection[num] as Texture;
         GameManager.script.CurrentActivePictureList.Add(this.gameObject);   //將物件儲存到容器
     }
 

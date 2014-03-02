@@ -8,29 +8,26 @@ public class ABTextureManager : MonoBehaviour
 
     public bool ABRoadFinish = false;          //讀取狀態flag
     public List<Object> TextureCollection;  //自AB讀取到的圖片清單
+    public List<Object> ChooseClassWordCollection;  //自ReadyGame場景選擇進行遊戲的單字集合
 
     void Awake()
     {
-        script = this;
+        if (ABTextureManager.script != null)
+            Destroy(this.gameObject);
+        else
+            script = this;
     }
 
     // Use this for initialization
     void Start()
     {
+        DontDestroyOnLoad(this.gameObject);
         this.LoadAssetBundle();
     }
 
     public void LoadAssetBundle()
     {
         StartCoroutine(RunLoadAssetBundle());
-    }
-
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.E))
-            Application.LoadLevel(0);
-        if (Input.GetKeyDown(KeyCode.G))
-            Application.LoadLevel(1);
     }
 
     /// <summary>

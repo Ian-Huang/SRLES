@@ -12,22 +12,23 @@ public class ButtonController : MonoBehaviour
 
     void ButtonDown(ButtonEvent BtnEvent)
     {
+        //分別處理按鈕事件
         switch (BtnEvent)
         {
             case ButtonEvent.EnterReadyGame:
-                Application.LoadLevelAsync("ReadyGame");
+                Application.LoadLevel("ReadyGame");
                 break;
             case ButtonEvent.EnterEditMode:
-                Application.LoadLevelAsync("Edit");
+                Application.LoadLevel("Edit");
                 break;
             case ButtonEvent.EnterTrainMode:
-                Application.LoadLevelAsync("TrainMode");
+                Application.LoadLevel("TrainMode");
                 break;
             case ButtonEvent.EnterGameMode:
-                Application.LoadLevelAsync("Game");
+                Application.LoadLevel("Game");
                 break;
             case ButtonEvent.EnterHome:
-                Application.LoadLevelAsync("Home");
+                Application.LoadLevel("Home");
                 break;
             case ButtonEvent.ExitGame:
                 Application.Quit();

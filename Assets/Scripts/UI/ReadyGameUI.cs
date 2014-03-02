@@ -8,6 +8,9 @@ public class ReadyGameUI : MonoBehaviour
 {
     public GUISkin skin;
 
+    public GameObject EnterGameModeButton;
+    public GameObject EnterTrainModeButton;
+
     //課程清單位置(之後要寫成彈性化相容於各種解析度)
     public Rect ClassListWindowRect = new Rect(25, 20, 250, 250);
     public Rect ClassInfoWindowRect = new Rect(300, 20, 250, 250);
@@ -15,7 +18,7 @@ public class ReadyGameUI : MonoBehaviour
 
     public Vector2 ClassListScrollViewPosition; //課程清單滾輪位置
     public List<string> ClassNameList = new List<string>();   //課程名稱清單
-    private int ChooseClassIndex = -1;    //目前被選擇的課程序號
+    private int ChooseClassIndex;    //目前被選擇的課程序號
     public string CurrentChooseClassName;         //當前被選擇的課程名稱
     private string[] classListArrary = new string[0];   //儲存所有課程名稱的矩陣
 
@@ -25,6 +28,10 @@ public class ReadyGameUI : MonoBehaviour
 
     void Start()
     {
+        this.ChooseClassIndex = -1;
+        this.EnterGameModeButton.SetActive(false);
+        this.EnterTrainModeButton.SetActive(false);
+
         //先行載入課程清單資訊
         StartCoroutine(this.CreateClassNameList());
     }
@@ -71,6 +78,7 @@ public class ReadyGameUI : MonoBehaviour
             Object obj = ABTextureManager.script.TextureCollection.Find((Object temp) => { return temp.name == node.Name; });
             this.ClassInfoObjectList.Add(obj);
         }
+        ABTextureManager.script.ChooseClassWordCollection = new List<Object>(this.ClassInfoObjectList);
     }
 
     void OnGUI()
@@ -122,6 +130,12 @@ public class ReadyGameUI : MonoBehaviour
             //判斷被選擇的課程是否不一樣，會將課程資訊做更換
             if (oldIndex != this.ChooseClassIndex)
             {
+                if (oldIndex == -1)
+                {
+                    this.EnterGameModeButton.SetActive(true);
+                    this.EnterTrainModeButton.SetActive(true);
+                }
+
                 this.CurrentChooseClassName = this.classListArrary[this.ChooseClassIndex];  //儲存目前被選擇的課程名
                 StartCoroutine(this.CreateClassInfoObjectList());
             }

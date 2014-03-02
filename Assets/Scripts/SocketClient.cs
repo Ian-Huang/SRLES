@@ -55,6 +55,8 @@ public class SocketClient : MonoBehaviour
             this.myTcpClient.Connect(this.IP, this.Port);
             print("連線成功 !!\n");
             this.myNetworkStream = myTcpClient.GetStream();
+
+            StartCoroutine(this.SetRecognitionWords());
         }
         catch (Exception e)
         {
@@ -64,6 +66,21 @@ public class SocketClient : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 設定即將辨識的單字
+    /// </summary>
+    IEnumerator SetRecognitionWords()
+    {
+        yield return new WaitForSeconds(3);     //等待3秒，在設定單字，以免導致過快設定出錯
+        //-----發送訊息，讓語音伺服器開始設定辨識單字-----
+        string sendStr = "SettingWord:";    //功能設定字
+        foreach (var temp in ABTextureManager.script.ChooseClassWordCollection)
+            sendStr += (temp.name + ",");   //加入待辨識的字串
+
+        Byte[] myBytes = Encoding.UTF8.GetBytes(sendStr);       //String to Byte
+        this.myNetworkStream.Write(myBytes, 0, myBytes.Length); //發送至Server
+        //-----發送訊息，讓語音伺服器開始設定辨識單字-----
+    }
 
     // Update is called once per frame
     void Update()
@@ -118,7 +135,7 @@ public class SocketClient : MonoBehaviour
         {
             //-----發送訊息，讓語音伺服器開始設定辨識單字-----
             string sendStr = "SettingWord:";    //功能設定字
-            foreach (var temp in ABTextureManager.script.TextureCollection)
+            foreach (var temp in ABTextureManager.script.ChooseClassWordCollection)
                 sendStr += (temp.name + ",");   //加入待辨識的字串
 
             Byte[] myBytes = Encoding.UTF8.GetBytes(sendStr);       //String to Byte
