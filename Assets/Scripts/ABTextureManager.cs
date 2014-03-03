@@ -40,7 +40,8 @@ public class ABTextureManager : MonoBehaviour
 
         WWW www = new WWW(@"file:///" + Application.dataPath + @"/all.assetBunldes");
 
-        yield return www;       //等待下載完成
+        while (www == null)     //等待下載完成
+            yield return null;
 
         this.TextureCollection = new List<Object>(www.assetBundle.LoadAll());   //將AB中的圖片載入到List清單
         www.assetBundle.Unload(false);
