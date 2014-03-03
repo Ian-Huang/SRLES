@@ -14,6 +14,8 @@ namespace SocketServer
     /// </summary>
     class ServerProgram
     {
+        public int RecongnitionSuccseeScore = 60;
+
         private SpeechRecognitionEngine speechEngine;   //語音辨識引擎
         private RecognizerInfo recognizerInfo = null;   //語音辨識引擎資訊
 
@@ -74,6 +76,10 @@ namespace SocketServer
                             //}
                             master.SendMessageToClient("語音辨識伺服器，開始設定單字");
                             master.SpeechRecongnitionSettingWords(words.ToArray());
+                            break;
+                        case "SettingRecongnitionScore":     //設定辨識單字
+                            master.RecongnitionSuccseeScore = Int32.Parse(receiveStringSplit[1]);
+                            master.SendMessageToClient("辨識成功分數設定完成：" + master.RecongnitionSuccseeScore.ToString());
                             break;
                         case "Abc":
                             Console.WriteLine(receiveString);
@@ -178,13 +184,25 @@ namespace SocketServer
         /// <param name="e"></param>
         void SreSpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
-            string message = "辨識單字：" + e.Result.Text + "準確度：" + e.Result.Confidence.ToString("0.00");
+            string sendStr;
+            int score = (int)(e.Result.Confidence * 100);
+
+            string message = "辨識單字：" + e.Result.Text + "準確度：" + score.ToString();
             Console.WriteLine(message);
 
-            string sendStr = "DeletePicture:";    //功能設定字(使Client刪除辨識單字圖片)
-            sendStr += e.Result.Text;
 
-            this.SendMessageToClient(sendStr);
+            if (score < this.RecongnitionSuccseeScore)
+            {
+                //辨識分數過低，失敗
+                this.SendMessageToClient(e.Result.Text + "，分數過低失敗");
+            }
+            else
+            {
+                sendStr = "DeletePicture:";    //功能設定字(使Client刪除辨識單字圖片)
+                sendStr += e.Result.Text;
+
+                this.SendMessageToClient(sendStr);
+            }
         }
 
         /// <summary>

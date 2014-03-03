@@ -2,16 +2,21 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class GameManager : MonoBehaviour
+public class GameModeManager : MonoBehaviour
 {
-    public static GameManager script;
+    public static GameModeManager script;
+
+    public GameObject StopWindowObject;
+    private GameObject stopButton;
 
     public GameObject PicturePrefab;    //生成物件Prefab
     public float CreateTime;            //生成物件間隔
 
+    [HideInInspector]
     public ScreenRect Screenrect;
+    [HideInInspector]
     public ScreenRect SafeScreenrect;
-
+    [HideInInspector]
     public List<GameObject> CurrentActivePictureList;   //將當前在場景上的圖片物件儲存進容器中
 
     void Awake()
@@ -22,6 +27,8 @@ public class GameManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        this.StopWindowObject.SetActive(false);
+
         //-----擷取可視螢幕範圍-----
         Vector3 leftbottom = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, 0));
         Vector3 righttop = Camera.main.ViewportToWorldPoint(new Vector3(1, 1, 0));
@@ -41,6 +48,21 @@ public class GameManager : MonoBehaviour
     public void StartCreatePicture()
     {
         InvokeRepeating("CreatePicture", 0.1f, this.CreateTime);    //產生圖片設定，固定間隔
+    }
+
+    public void StopGame(GameObject SendButton)
+    {
+        this.StopWindowObject.SetActive(true);
+        Time.timeScale = 0.00001f;
+        this.stopButton = SendButton;
+        SendButton.SetActive(false);
+    }
+
+    public void ResumeGame()
+    {
+        this.StopWindowObject.SetActive(false);
+        this.stopButton.SetActive(true);
+        Time.timeScale = 1;
     }
 
     // Update is called once per frame

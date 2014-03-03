@@ -1,5 +1,5 @@
 <ClassList>
-  <未命名課程1>
+  <Class1>
     <snake />
     <zebra />
     <cake />
@@ -10,7 +10,7 @@
     <milk />
     <pig />
     <star />
-  </未命名課程1>
+  </Class1>
   <未命名課程2>
     <apple />
     <book />
@@ -20,5 +20,13 @@
     <strawberry />
     <zebra />
   </未命名課程2>
-  <未命名課程3 />
+  <未命名課程3>
+    <apple />
+    <crab />
+    <frog />
+    <icecream />
+    <monkey />
+    <pizza />
+    <strawberry />
+  </未命名課程3>
 </ClassList>

@@ -5,12 +5,12 @@ public class ButtonController : MonoBehaviour
 {
     public ButtonEvent buttonEvent;
 
-    void OnMouseDown()
+    void OnMouseUp()
     {
-        this.ButtonDown(this.buttonEvent);
+        this.ButtonUp(this.buttonEvent);
     }
 
-    void ButtonDown(ButtonEvent BtnEvent)
+    void ButtonUp(ButtonEvent BtnEvent)
     {
         //分別處理按鈕事件
         switch (BtnEvent)
@@ -25,13 +25,24 @@ public class ButtonController : MonoBehaviour
                 Application.LoadLevel("TrainMode");
                 break;
             case ButtonEvent.EnterGameMode:
+                ReadyGameUI script = GameObject.FindObjectOfType<ReadyGameUI>();
+                GameDefinition.GameMode_DownSpeed = script.SetValue_DownSpeed;
+                GameDefinition.GameMode_GameTime = script.SetValue_GameTime * 30;
+                GameDefinition.GameMode_SuccessScore = script.SetValue_SuccessScore;
                 Application.LoadLevel("Game");
                 break;
             case ButtonEvent.EnterHome:
+                Time.timeScale = 1;
                 Application.LoadLevel("Home");
                 break;
             case ButtonEvent.ExitGame:
                 Application.Quit();
+                break;
+            case ButtonEvent.StopGame:
+                GameModeManager.script.StopGame(this.gameObject);
+                break;
+            case ButtonEvent.ResumeGame:
+                GameModeManager.script.ResumeGame();
                 break;
             default:
                 break;
@@ -40,6 +51,7 @@ public class ButtonController : MonoBehaviour
 
     public enum ButtonEvent
     {
-        EnterReadyGame = 0, EnterEditMode = 1, ExitGame = 2, EnterGameMode = 3, EnterTrainMode = 4, EnterHome = 5
+        EnterReadyGame = 0, EnterEditMode = 1, ExitGame = 2, EnterGameMode = 3, EnterTrainMode = 4, EnterHome = 5,
+        StopGame = 6, ResumeGame = 7
     }
 }

@@ -14,6 +14,7 @@ public class ReadyGameUI : MonoBehaviour
     //課程清單位置(之後要寫成彈性化相容於各種解析度)
     public Rect ClassListWindowRect = new Rect(25, 20, 250, 250);
     public Rect ClassInfoWindowRect = new Rect(300, 20, 250, 250);
+    public Rect GameSettingWindowRect = new Rect(575, 20, 250, 250);
 
 
     public Vector2 ClassListScrollViewPosition; //課程清單滾輪位置
@@ -25,12 +26,21 @@ public class ReadyGameUI : MonoBehaviour
     public Vector2 ClassInfoScrollViewPosition; //課程資訊滾輪位置
     public List<Object> ClassInfoObjectList = new List<Object>();   //課程資訊物件清單
 
+    public int SetValue_GameTime;
+    public float SetValue_DownSpeed;
+    public int SetValue_SuccessScore;
 
     void Start()
     {
+        //場景一開始未選擇課程前，隱藏開始遊戲、練習模式按鈕(防呆)
         this.ChooseClassIndex = -1;
         this.EnterGameModeButton.SetActive(false);
         this.EnterTrainModeButton.SetActive(false);
+        //場景一開始未選擇課程前，隱藏開始遊戲、練習模式按鈕(防呆)
+
+        this.SetValue_GameTime = (GameDefinition.Slider_GameTimeMax + GameDefinition.Slider_GameTimeMin) / 2;
+        this.SetValue_DownSpeed = (GameDefinition.Slider_DownSpeedMax + GameDefinition.Slider_DownSpeedMin) / 2.0f;
+        this.SetValue_SuccessScore = (GameDefinition.Slider_SuccessScoreMax + GameDefinition.Slider_SuccessScoreMin) / 2;
 
         //先行載入課程清單資訊
         StartCoroutine(this.CreateClassNameList());
@@ -90,6 +100,58 @@ public class ReadyGameUI : MonoBehaviour
 
         //課程資訊視窗
         this.ClassInfoWindowRect = GUILayout.Window((int)WindowID.ClassInfoWindow, this.ClassInfoWindowRect, this.ClassInfoWindow, this.CurrentChooseClassName);
+
+        //遊戲設定視窗
+        this.GameSettingWindowRect = GUILayout.Window((int)WindowID.GameSettingWindow, this.GameSettingWindowRect, this.GameSettingWindow, "遊戲設定");
+    }
+
+    /// <summary>
+    /// 遊戲設定視窗
+    /// </summary>
+    /// <param name="windowID"></param>
+    void GameSettingWindow(int windowID)
+    {
+        GUILayout.BeginVertical();
+        {
+            GUILayout.Label("遊戲時間(秒)");
+            this.SetValue_GameTime = Mathf.FloorToInt(GUILayout.HorizontalSlider(this.SetValue_GameTime, GameDefinition.Slider_GameTimeMin, GameDefinition.Slider_GameTimeMax));
+            GUILayout.BeginHorizontal();
+            {
+                GUILayout.Label("30");
+                GUILayout.FlexibleSpace();
+                GUILayout.Label("60");
+                GUILayout.FlexibleSpace();
+                GUILayout.Label("90");
+            } GUILayout.EndHorizontal();
+        } GUILayout.EndVertical();
+
+        GUILayout.FlexibleSpace();
+
+        GUILayout.BeginVertical();
+        {
+            GUILayout.Label("物品掉落速度");
+            this.SetValue_DownSpeed = GUILayout.HorizontalSlider(this.SetValue_DownSpeed, GameDefinition.Slider_DownSpeedMin, GameDefinition.Slider_DownSpeedMax);
+            GUILayout.BeginHorizontal();
+            {
+                GUILayout.Label("慢");
+                GUILayout.FlexibleSpace();
+                GUILayout.Label("快");
+            } GUILayout.EndHorizontal();
+        } GUILayout.EndVertical();
+
+        GUILayout.FlexibleSpace();
+
+        GUILayout.BeginVertical();
+        {
+            GUILayout.Label("辨識正確分數：" + this.SetValue_SuccessScore);
+            this.SetValue_SuccessScore = Mathf.FloorToInt(GUILayout.HorizontalSlider(this.SetValue_SuccessScore, GameDefinition.Slider_SuccessScoreMin, GameDefinition.Slider_SuccessScoreMax));
+            GUILayout.BeginHorizontal();
+            {
+                GUILayout.Label(GameDefinition.Slider_SuccessScoreMin.ToString());
+                GUILayout.FlexibleSpace();
+                GUILayout.Label(GameDefinition.Slider_SuccessScoreMax.ToString());
+            } GUILayout.EndHorizontal();
+        } GUILayout.EndVertical();
     }
 
     /// <summary>
@@ -141,11 +203,12 @@ public class ReadyGameUI : MonoBehaviour
             }
         }
         GUILayout.EndScrollView();
+
     }
 
 
     public enum WindowID
     {
-        ClassListWindow = 0, ClassInfoWindow = 2
+        ClassListWindow = 0, ClassInfoWindow = 2, GameSettingWindow = 3
     }
 }

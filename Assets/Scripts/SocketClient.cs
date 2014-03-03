@@ -56,7 +56,7 @@ public class SocketClient : MonoBehaviour
             print("連線成功 !!\n");
             this.myNetworkStream = myTcpClient.GetStream();
 
-            StartCoroutine(this.SetRecognitionWords());
+            StartCoroutine(this.SetRecognitionInfo());
         }
         catch (Exception e)
         {
@@ -67,17 +67,28 @@ public class SocketClient : MonoBehaviour
     }
 
     /// <summary>
-    /// 設定即將辨識的單字
+    /// 設定即將辨識的單字與辨識度分數設定
     /// </summary>
-    IEnumerator SetRecognitionWords()
+    IEnumerator SetRecognitionInfo()
     {
         yield return new WaitForSeconds(3);     //等待3秒，在設定單字，以免導致過快設定出錯
+        string sendStr;
+        Byte[] myBytes;
+
+        //-----發送訊息，辨識度分數設定-----
+        sendStr = "SettingRecongnitionScore:";    //功能設定字
+        sendStr += GameDefinition.GameMode_SuccessScore.ToString();
+
+        myBytes = Encoding.UTF8.GetBytes(sendStr);       //String to Byte
+        this.myNetworkStream.Write(myBytes, 0, myBytes.Length); //發送至Server
+        //-----發送訊息，辨識度分數設定-----
+
         //-----發送訊息，讓語音伺服器開始設定辨識單字-----
-        string sendStr = "SettingWord:";    //功能設定字
+        sendStr = "SettingWord:";    //功能設定字
         foreach (var temp in ABTextureManager.script.ChooseClassWordCollection)
             sendStr += (temp.name + ",");   //加入待辨識的字串
 
-        Byte[] myBytes = Encoding.UTF8.GetBytes(sendStr);       //String to Byte
+        myBytes = Encoding.UTF8.GetBytes(sendStr);       //String to Byte
         this.myNetworkStream.Write(myBytes, 0, myBytes.Length); //發送至Server
         //-----發送訊息，讓語音伺服器開始設定辨識單字-----
     }
@@ -95,7 +106,7 @@ public class SocketClient : MonoBehaviour
             {
                 case "DeletePicture":     //刪除圖片(接收Server發送的刪除單字)
                     //將Server傳送的辨識字進行搜尋，如在場景上則進行刪除動作
-                    GameObject tempObj = GameManager.script.CurrentActivePictureList.Find((obj) => { return obj.name == reStringSplit[1]; });
+                    GameObject tempObj = GameModeManager.script.CurrentActivePictureList.Find((obj) => { return obj.name == reStringSplit[1]; });
                     if (tempObj != null)
                         tempObj.GetComponent<PictureController>().DestroySelf();
                     break;
@@ -123,33 +134,41 @@ public class SocketClient : MonoBehaviour
     }
 
 
-    void OnGUI()
-    {
-        this.TestString = GUI.TextField(new Rect(50, 50, 200, 50), this.TestString);
-        if (GUI.Button(this.rect, "發送訊息"))
-        {
-            Byte[] myBytes = Encoding.UTF8.GetBytes(this.TestString);
-            this.myNetworkStream.Write(myBytes, 0, myBytes.Length);
-        }
-        if (GUI.Button(new Rect(50, 175, 200, 50), "設定單字"))
-        {
-            //-----發送訊息，讓語音伺服器開始設定辨識單字-----
-            string sendStr = "SettingWord:";    //功能設定字
-            foreach (var temp in ABTextureManager.script.ChooseClassWordCollection)
-                sendStr += (temp.name + ",");   //加入待辨識的字串
+    //void OnGUI()
+    //{
+    //    this.TestString = GUI.TextField(new Rect(50, 50, 200, 50), this.TestString);
+    //    if (GUI.Button(this.rect, "發送訊息"))
+    //    {
+    //        Byte[] myBytes = Encoding.UTF8.GetBytes(this.TestString);
+    //        this.myNetworkStream.Write(myBytes, 0, myBytes.Length);
+    //    }
+    //    if (GUI.Button(new Rect(50, 175, 200, 50), "設定單字"))
+    //    {
+    //        //-----發送訊息，讓語音伺服器開始設定辨識單字-----
+    //        string sendStr = "SettingWord:";    //功能設定字
+    //        foreach (var temp in ABTextureManager.script.ChooseClassWordCollection)
+    //            sendStr += (temp.name + ",");   //加入待辨識的字串
 
-            Byte[] myBytes = Encoding.UTF8.GetBytes(sendStr);       //String to Byte
-            this.myNetworkStream.Write(myBytes, 0, myBytes.Length); //發送至Server
-            //-----發送訊息，讓語音伺服器開始設定辨識單字-----
-        }
-    }
+    //        Byte[] myBytes = Encoding.UTF8.GetBytes(sendStr);       //String to Byte
+    //        this.myNetworkStream.Write(myBytes, 0, myBytes.Length); //發送至Server
+    //        //-----發送訊息，讓語音伺服器開始設定辨識單字-----
+    //    }
+    //}
+
+    ///// <summary>
+    ///// 結束程式時，關閉語音辨識伺服器
+    ///// </summary>
+    //void OnApplicationQuit()
+    //{
+    //    //this.myTcpClient.Close();       //關閉連接Server的接口
+    //    this.process.CloseMainWindow(); //關閉
+    //}
 
     /// <summary>
-    /// 結束程式時，關閉語音辨識伺服器
+    /// 場景結束時，關閉語音辨識伺服器
     /// </summary>
-    void OnApplicationQuit()
+    void OnDisable()
     {
-        //this.myTcpClient.Close();       //關閉連接Server的接口
         this.process.CloseMainWindow(); //關閉
     }
 }
