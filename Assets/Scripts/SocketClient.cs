@@ -75,13 +75,13 @@ public class SocketClient : MonoBehaviour
         string sendStr;
         Byte[] myBytes;
 
-        //-----發送訊息，辨識度分數設定-----
-        sendStr = "SettingRecongnitionScore:";    //功能設定字
-        sendStr += GameDefinition.GameMode_SuccessScore.ToString();
+        ////-----發送訊息，辨識度分數設定-----
+        //sendStr = "SettingRecongnitionScore:";    //功能設定字
+        //sendStr += GameDefinition.GameMode_SuccessScore.ToString();
 
-        myBytes = Encoding.UTF8.GetBytes(sendStr);       //String to Byte
-        this.myNetworkStream.Write(myBytes, 0, myBytes.Length); //發送至Server
-        //-----發送訊息，辨識度分數設定-----
+        //myBytes = Encoding.UTF8.GetBytes(sendStr);       //String to Byte
+        //this.myNetworkStream.Write(myBytes, 0, myBytes.Length); //發送至Server
+        ////-----發送訊息，辨識度分數設定-----
 
         //-----發送訊息，讓語音伺服器開始設定辨識單字-----
         sendStr = "SettingWord:";    //功能設定字
@@ -91,6 +91,21 @@ public class SocketClient : MonoBehaviour
         myBytes = Encoding.UTF8.GetBytes(sendStr);       //String to Byte
         this.myNetworkStream.Write(myBytes, 0, myBytes.Length); //發送至Server
         //-----發送訊息，讓語音伺服器開始設定辨識單字-----
+    }
+
+    public void SpeakWord(string word)
+    {
+        string sendStr;
+        Byte[] myBytes;
+
+        //-----發送訊息，念出單字-----
+        sendStr = "SpeakWord:";    //功能設定字
+        sendStr += word;
+
+        myBytes = Encoding.UTF8.GetBytes(sendStr);       //String to Byte
+        this.myNetworkStream.Write(myBytes, 0, myBytes.Length); //發送至Server
+        //-----發送訊息，念出單字-----
+
     }
 
     // Update is called once per frame
@@ -104,11 +119,34 @@ public class SocketClient : MonoBehaviour
             string[] reStringSplit = this.readString.Split(':'); //動作字串分析 [0] ，以":"做區隔
             switch (reStringSplit[0])
             {
-                case "DeletePicture":     //刪除圖片(接收Server發送的刪除單字)
-                    //將Server傳送的辨識字進行搜尋，如在場景上則進行刪除動作
-                    GameObject tempObj = GameModeManager.script.CurrentActivePictureList.Find((obj) => { return obj.name == reStringSplit[1]; });
-                    if (tempObj != null)
-                        tempObj.GetComponent<PictureController>().DestroySelf();
+                case "RecognizedWord":     //刪除圖片(接收Server發送的刪除單字)
+                    if (GameObject.FindObjectOfType<GameModeManager>() != null)
+                    {
+                        string[] reWordSplit = reStringSplit[1].Split(',');
+
+                        if (Int32.Parse(reWordSplit[1]) >= GameDefinition.GameMode_SuccessScore)    //辨識分數大於設定值才能刪除物件
+                        {
+                            //將Server傳送的辨識字進行搜尋，如在場景上則進行刪除動作
+                            GameObject tempObj = GameModeManager.script.CurrentActivePictureList.Find((obj) => { return obj.name == reWordSplit[0]; });
+                            if (tempObj != null)
+                                tempObj.GetComponent<PictureController>().DestroySelf();
+                        }
+                        else
+                            print("分數過低");
+                    }
+                    else if (GameObject.FindObjectOfType<TrainModeManager>() != null)
+                    {
+                        string[] reWordSplit = reStringSplit[1].Split(',');
+                        CardMove cardMove = TrainModeManager.script.CurrentTargetObject.GetComponent<CardMove>();
+                        print("!!!!!!!");
+                        if (cardMove.isCanRecognized)   //確認可以開始辨識
+                        {
+                            if (cardMove.CardText == reWordSplit[0])    //目前卡片單字與辨識字相同
+                            {
+                                print(cardMove.CardText + " , 辨識分數：" + Int32.Parse(reWordSplit[1]));
+                            }
+                        }
+                    }
                     break;
                 default:
                     break;

@@ -13,11 +13,9 @@
   </Class1>
   <未命名課程2>
     <apple />
-    <book />
     <dog />
     <goat />
     <lemon />
-    <strawberry />
     <zebra />
   </未命名課程2>
   <未命名課程3>
@@ -28,5 +26,6 @@
     <monkey />
     <pizza />
     <strawberry />
+    <banana />
   </未命名課程3>
 </ClassList>

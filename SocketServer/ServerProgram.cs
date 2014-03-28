@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using Microsoft.Speech.Recognition;
 using System.Threading;
 using System.Text;
+using Microsoft.Speech.Synthesis;
 
 namespace SocketServer
 {
@@ -19,6 +20,8 @@ namespace SocketServer
         private SpeechRecognitionEngine speechEngine;   //語音辨識引擎
         private RecognizerInfo recognizerInfo = null;   //語音辨識引擎資訊
 
+        public SpeechSynthesizer synthesizer; //TTS 函式
+
         private bool checkClientClosed = false;         //確認目前與Client連線狀態
         private Socket mySocket;                        //Server Socket物件
 
@@ -29,6 +32,12 @@ namespace SocketServer
             //將語音辨識初始化設定獨立執行緒
             Thread SRInitThread = new Thread(new ThreadStart(master.SpeechRecongnitionInit));
             SRInitThread.Start();
+
+            //設定TTS輸出的音源(預設音源)
+            master.synthesizer = new SpeechSynthesizer();  //TTS 函式
+            master.synthesizer.SetOutputToDefaultAudioDevice();
+            master.synthesizer.Volume = 100;
+            master.synthesizer.Rate = 0;
 
             //建立監聽物件
             TcpListener myTcpListener = new TcpListener(System.Net.IPAddress.Parse("127.0.0.1"), 36000);
@@ -77,13 +86,13 @@ namespace SocketServer
                             master.SendMessageToClient("語音辨識伺服器，開始設定單字");
                             master.SpeechRecongnitionSettingWords(words.ToArray());
                             break;
-                        case "SettingRecongnitionScore":     //設定辨識單字
-                            master.RecongnitionSuccseeScore = Int32.Parse(receiveStringSplit[1]);
-                            master.SendMessageToClient("辨識成功分數設定完成：" + master.RecongnitionSuccseeScore.ToString());
-                            break;
-                        case "Abc":
-                            Console.WriteLine(receiveString);
-                            master.SendMessageToClient("請刪除全部物件");
+                        //case "SettingRecongnitionScore":     //設定辨識準確度
+                        //    master.RecongnitionSuccseeScore = Int32.Parse(receiveStringSplit[1]);
+                        //    master.SendMessageToClient("辨識成功分數設定完成：" + master.RecongnitionSuccseeScore.ToString());
+                        //    break;
+                        case "SpeakWord":       //系統念單字
+                            Console.WriteLine("念出單字：" + receiveStringSplit[1]);
+                            master.SpeakWord(receiveStringSplit[1]);
                             break;
                         default:
                             break;
@@ -94,6 +103,16 @@ namespace SocketServer
             } while (!master.checkClientClosed);
 
             Console.WriteLine("結束連線");
+        }
+
+        /// <summary>
+        /// 系統念出單字
+        /// </summary>
+        /// <param name="word">單字</param>
+        private void SpeakWord(string word)
+        {
+            synthesizer.SpeakAsyncCancelAll();
+            synthesizer.SpeakAsync(word);
         }
 
         /// <summary>
@@ -190,19 +209,22 @@ namespace SocketServer
             string message = "辨識單字：" + e.Result.Text + "準確度：" + score.ToString();
             Console.WriteLine(message);
 
-
-            if (score < this.RecongnitionSuccseeScore)
-            {
-                //辨識分數過低，失敗
-                this.SendMessageToClient(e.Result.Text + "，分數過低失敗");
-            }
-            else
-            {
-                sendStr = "DeletePicture:";    //功能設定字(使Client刪除辨識單字圖片)
-                sendStr += e.Result.Text;
-
-                this.SendMessageToClient(sendStr);
-            }
+            sendStr = "RecognizedWord:";    //功能設定字(使Client知道目前系統辨識到的單字)
+            sendStr += e.Result.Text;       //字串(單字)
+            sendStr += ("," + score);       //字串(辨識分數)
+            this.SendMessageToClient(sendStr);
+            //if (score < this.RecongnitionSuccseeScore)
+            //{
+            //    //辨識分數過低，失敗
+            //    this.SendMessageToClient(e.Result.Text + "，分數過低失敗");
+            //}
+            //else
+            //{
+            //    sendStr = "RecognizedWord:";    //功能設定字(使Client知道目前系統辨識到的單字)
+            //    sendStr += e.Result.Text;       //字串(單字)
+            //    sendStr += ("," + score);       //字串(辨識分數)
+            //    this.SendMessageToClient(sendStr);
+            //}
         }
 
         /// <summary>

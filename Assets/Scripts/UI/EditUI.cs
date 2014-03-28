@@ -27,6 +27,8 @@ public class EditUI : MonoBehaviour
     public string ModifyClassNameString;        //課程名稱修改用字串
     public string CurrentEditClassName;         //當前選擇編輯的課程名稱
 
+    public bool isEditinfoOpen = false;
+
     void Start()
     {
         //先行載入課程清單資訊
@@ -97,13 +99,14 @@ public class EditUI : MonoBehaviour
 
         //課程清單視窗
         this.ClassListWindowRect = GUILayout.Window((int)WindowID.ClassListWindow, this.ClassListWindowRect, this.ClassListWindow, "課程清單");
+        if (this.isEditinfoOpen)
+        {
+            //單字庫視窗
+            this.WordDataWindowRect = GUILayout.Window((int)WindowID.WordDataWindow, this.WordDataWindowRect, this.WordDataWindow, "單字庫");
 
-        //單字庫視窗
-        this.WordDataWindowRect = GUILayout.Window((int)WindowID.WordDataWindow, this.WordDataWindowRect, this.WordDataWindow, "單字庫");
-
-        //課程資訊視窗
-        this.ClassInfoWindowRect = GUILayout.Window((int)WindowID.ClassInfoWindow, this.ClassInfoWindowRect, this.ClassInfoWindow, this.CurrentEditClassName);
-
+            //課程資訊視窗
+            this.ClassInfoWindowRect = GUILayout.Window((int)WindowID.ClassInfoWindow, this.ClassInfoWindowRect, this.ClassInfoWindow, this.CurrentEditClassName);
+        }
         //提醒視窗
         //this.HintWindowRect = GUILayout.Window(1, this.HintWindowRect, this.HintWindow, "提醒");
     }
@@ -250,6 +253,7 @@ public class EditUI : MonoBehaviour
                     GUILayout.FlexibleSpace();
                     if (GUILayout.Button("編輯"))
                     {
+                        this.isEditinfoOpen = true;
                         this.CurrentEditClassName = this.ModifyClassNameString = key;
                         StartCoroutine(this.CreateClassInfoTogglesMap());
                     }

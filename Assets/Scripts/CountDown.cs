@@ -18,7 +18,12 @@ public class CountDown : MonoBehaviour
 
     void CountDownEnding(SmoothMoves.UserTriggerEvent triggerDelegate)
     {
-        GameModeManager.script.StartCreatePicture();    //呼叫GameManager開始產生物件
+        if (GameObject.FindObjectOfType<GameModeManager>() != null)
+            GameModeManager.script.StartCreatePicture();    //呼叫GameManager開始產生物件
+
+        else if (GameObject.FindObjectOfType<TrainModeManager>() != null)
+            TrainModeManager.script.StartTrainMode();
+
         Destroy(this.gameObject);
     }
 }
