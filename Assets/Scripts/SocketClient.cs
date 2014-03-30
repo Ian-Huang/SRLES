@@ -137,13 +137,12 @@ public class SocketClient : MonoBehaviour
                     else if (GameObject.FindObjectOfType<TrainModeManager>() != null)
                     {
                         string[] reWordSplit = reStringSplit[1].Split(',');
-                        CardMove cardMove = TrainModeManager.script.CurrentTargetObject.GetComponent<CardMove>();
-                        print("!!!!!!!");
+                        CardMove cardMove = TrainModeManager.script.CurrentTargetCardObject.GetComponent<CardMove>();
                         if (cardMove.isCanRecognized)   //確認可以開始辨識
                         {
                             if (cardMove.CardText == reWordSplit[0])    //目前卡片單字與辨識字相同
                             {
-                                print(cardMove.CardText + " , 辨識分數：" + Int32.Parse(reWordSplit[1]));
+                                TrainModeManager.script.ShowScore(reWordSplit[1]);                                
                             }
                         }
                     }

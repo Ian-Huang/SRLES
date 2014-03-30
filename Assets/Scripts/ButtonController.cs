@@ -39,10 +39,16 @@ public class ButtonController : MonoBehaviour
                 Application.Quit();
                 break;
             case ButtonEvent.StopGame:
-                GameModeManager.script.StopGame(this.gameObject);
+                if (GameObject.FindObjectOfType<GameModeManager>() != null)
+                    GameModeManager.script.StopGame(this.gameObject);
+                else if (GameObject.FindObjectOfType<TrainModeManager>() != null)
+                    TrainModeManager.script.StopGame(this.gameObject);
                 break;
             case ButtonEvent.ResumeGame:
-                GameModeManager.script.ResumeGame();
+                if (GameObject.FindObjectOfType<GameModeManager>() != null)
+                    GameModeManager.script.ResumeGame();
+                else if (GameObject.FindObjectOfType<TrainModeManager>() != null)
+                    TrainModeManager.script.ResumeGame();
                 break;
             default:
                 break;

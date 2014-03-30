@@ -27,19 +27,6 @@ public class ArrowController : MonoBehaviour
             TrainModeManager.script.NextCard();
     }
 
-
-    // Use this for initialization
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     public enum ArrowType
     {
         RightArrow = 1, LeftArrow = 2
