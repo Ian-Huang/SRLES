@@ -30,6 +30,8 @@ public class ReadyGameUI : MonoBehaviour
     public float SetValue_DownSpeed;
     public int SetValue_SuccessScore;
 
+    private bool isClassinfoOpen = false;
+
     void Start()
     {
         //場景一開始未選擇課程前，隱藏開始遊戲、練習模式按鈕(防呆)
@@ -91,18 +93,30 @@ public class ReadyGameUI : MonoBehaviour
         ABTextureManager.script.ChooseClassWordCollection = new List<Object>(this.ClassInfoObjectList);
     }
 
+    private Vector2 ratio;
+    void Update()
+    {
+        this.ratio = new Vector2(Screen.width / GameDefinition.Normal_ScreenWidth, Screen.height / GameDefinition.Normal_ScreenHeight);
+    }
+
     void OnGUI()
     {
         GUI.skin = this.skin;
 
         //課程清單視窗
-        this.ClassListWindowRect = GUILayout.Window((int)WindowID.ClassListWindow, this.ClassListWindowRect, this.ClassListWindow, "課程清單");
+        GUILayout.Window((int)WindowID.ClassListWindow,
+            new Rect(this.ClassListWindowRect.x * this.ratio.x, this.ClassListWindowRect.y * this.ratio.y, this.ClassListWindowRect.width * this.ratio.x, this.ClassListWindowRect.height * this.ratio.y),
+            this.ClassListWindow, "課程清單");
 
-        //課程資訊視窗
-        this.ClassInfoWindowRect = GUILayout.Window((int)WindowID.ClassInfoWindow, this.ClassInfoWindowRect, this.ClassInfoWindow, this.CurrentChooseClassName);
-
-        //遊戲設定視窗
-        this.GameSettingWindowRect = GUILayout.Window((int)WindowID.GameSettingWindow, this.GameSettingWindowRect, this.GameSettingWindow, "遊戲設定");
+        if (this.isClassinfoOpen)
+        {
+            //課程資訊視窗
+            GUILayout.Window((int)WindowID.ClassInfoWindow,
+                 new Rect(this.ClassInfoWindowRect.x * this.ratio.x, this.ClassInfoWindowRect.y * this.ratio.y, this.ClassInfoWindowRect.width * this.ratio.x, this.ClassInfoWindowRect.height * this.ratio.y),
+                 this.ClassInfoWindow, this.CurrentChooseClassName);
+        }
+        ////遊戲設定視窗
+        //this.GameSettingWindowRect = GUILayout.Window((int)WindowID.GameSettingWindow, this.GameSettingWindowRect, this.GameSettingWindow, "遊戲設定");
     }
 
     /// <summary>
@@ -170,7 +184,7 @@ public class ReadyGameUI : MonoBehaviour
                     {
                         //------一個單字的架構------                        
                         GUIContent content = new GUIContent(key.name, key as Texture);  //圖+文字內容
-                        GUILayout.Label(content, GUILayout.Height(70));
+                        GUILayout.Label(content, GUILayout.Height(70 * this.ratio.x));
                         //------一個單字的架構------
                     }
                 }
@@ -196,6 +210,7 @@ public class ReadyGameUI : MonoBehaviour
                 {
                     this.EnterGameModeButton.SetActive(true);
                     this.EnterTrainModeButton.SetActive(true);
+                    this.isClassinfoOpen = true;
                 }
 
                 this.CurrentChooseClassName = this.classListArrary[this.ChooseClassIndex];  //儲存目前被選擇的課程名

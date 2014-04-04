@@ -16,4 +16,7 @@ public class GameDefinition
 
     public const int Slider_SuccessScoreMin = 40;
     public const int Slider_SuccessScoreMax = 80;
+
+    public const float Normal_ScreenWidth = 1280.0f;
+    public const float Normal_ScreenHeight = 720.0f;
 }
