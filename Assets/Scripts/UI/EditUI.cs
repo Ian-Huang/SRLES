@@ -96,7 +96,7 @@ public class EditUI : MonoBehaviour
     void OnGUI()
     {
         GUI.skin = this.skin;
-
+        
         //課程清單視窗
         this.ClassListWindowRect = GUILayout.Window((int)WindowID.ClassListWindow, this.ClassListWindowRect, this.ClassListWindow, "課程清單");
         if (this.isEditinfoOpen)

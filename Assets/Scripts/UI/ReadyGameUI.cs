@@ -202,7 +202,7 @@ public class ReadyGameUI : MonoBehaviour
         {
             int oldIndex = this.ChooseClassIndex;
             this.ChooseClassIndex = GUILayout.SelectionGrid(this.ChooseClassIndex, this.classListArrary, 1);    //產生可選擇的清單
-
+           
             //判斷被選擇的課程是否不一樣，會將課程資訊做更換
             if (oldIndex != this.ChooseClassIndex)
             {
