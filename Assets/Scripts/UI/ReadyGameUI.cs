@@ -31,6 +31,7 @@ public class ReadyGameUI : MonoBehaviour
     public int SetValue_SuccessScore;
 
     private bool isClassinfoOpen = false;
+    private Vector2 ratio;
 
     void Start()
     {
@@ -46,6 +47,11 @@ public class ReadyGameUI : MonoBehaviour
 
         //先行載入課程清單資訊
         StartCoroutine(this.CreateClassNameList());
+    }
+
+    void Update()
+    {
+        this.ratio = new Vector2(Screen.width / GameDefinition.Normal_ScreenWidth, Screen.height / GameDefinition.Normal_ScreenHeight);
     }
 
     /// <summary>
@@ -91,12 +97,6 @@ public class ReadyGameUI : MonoBehaviour
             this.ClassInfoObjectList.Add(obj);
         }
         ABTextureManager.script.ChooseClassWordCollection = new List<Object>(this.ClassInfoObjectList);
-    }
-
-    private Vector2 ratio;
-    void Update()
-    {
-        this.ratio = new Vector2(Screen.width / GameDefinition.Normal_ScreenWidth, Screen.height / GameDefinition.Normal_ScreenHeight);
     }
 
     void OnGUI()
@@ -202,7 +202,7 @@ public class ReadyGameUI : MonoBehaviour
         {
             int oldIndex = this.ChooseClassIndex;
             this.ChooseClassIndex = GUILayout.SelectionGrid(this.ChooseClassIndex, this.classListArrary, 1);    //產生可選擇的清單
-           
+
             //判斷被選擇的課程是否不一樣，會將課程資訊做更換
             if (oldIndex != this.ChooseClassIndex)
             {

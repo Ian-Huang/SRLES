@@ -28,6 +28,7 @@ public class EditUI : MonoBehaviour
     public string CurrentEditClassName;         //當前選擇編輯的課程名稱
 
     public bool isEditinfoOpen = false;
+    private Vector2 ratio;
 
     void Start()
     {
@@ -35,6 +36,11 @@ public class EditUI : MonoBehaviour
         StartCoroutine(this.CreateClassListToggleMap());
         //先行載入單字庫資訊
         StartCoroutine(this.CreateWordDataToggleMap());
+    }
+
+    void Update()
+    {
+        this.ratio = new Vector2(Screen.width / GameDefinition.Normal_ScreenWidth, Screen.height / GameDefinition.Normal_ScreenHeight);
     }
 
     /// <summary>
@@ -96,17 +102,25 @@ public class EditUI : MonoBehaviour
     void OnGUI()
     {
         GUI.skin = this.skin;
-        
+
         //課程清單視窗
-        this.ClassListWindowRect = GUILayout.Window((int)WindowID.ClassListWindow, this.ClassListWindowRect, this.ClassListWindow, "課程清單");
+        GUILayout.Window((int)WindowID.ClassListWindow,
+            new Rect(this.ClassListWindowRect.x * this.ratio.x, this.ClassListWindowRect.y * this.ratio.y, this.ClassListWindowRect.width * this.ratio.x, this.ClassListWindowRect.height * this.ratio.y),
+            this.ClassListWindow, "課程清單");
+
         if (this.isEditinfoOpen)
         {
             //單字庫視窗
-            this.WordDataWindowRect = GUILayout.Window((int)WindowID.WordDataWindow, this.WordDataWindowRect, this.WordDataWindow, "單字庫");
+            GUILayout.Window((int)WindowID.WordDataWindow,
+                new Rect(this.WordDataWindowRect.x * this.ratio.x, this.WordDataWindowRect.y * this.ratio.y, this.WordDataWindowRect.width * this.ratio.x, this.WordDataWindowRect.height * this.ratio.y),
+                this.WordDataWindow, "單字庫");
 
             //課程資訊視窗
-            this.ClassInfoWindowRect = GUILayout.Window((int)WindowID.ClassInfoWindow, this.ClassInfoWindowRect, this.ClassInfoWindow, this.CurrentEditClassName);
+            GUILayout.Window((int)WindowID.ClassInfoWindow,
+                new Rect(this.ClassInfoWindowRect.x * this.ratio.x, this.ClassInfoWindowRect.y * this.ratio.y, this.ClassInfoWindowRect.width * this.ratio.x, this.ClassInfoWindowRect.height * this.ratio.y),
+                this.ClassInfoWindow, this.CurrentEditClassName);
         }
+
         //提醒視窗
         //this.HintWindowRect = GUILayout.Window(1, this.HintWindowRect, this.HintWindow, "提醒");
     }
@@ -141,7 +155,7 @@ public class EditUI : MonoBehaviour
                     {
                         //------一個單字的架構------                        
                         GUIContent content = new GUIContent(key.name, key as Texture);  //圖+文字內容
-                        this.ClassInfoTogglesMap[key] = GUILayout.Toggle(this.ClassInfoTogglesMap[key], content, GUILayout.Height(70));   //因圖片太大，須設定大小                           
+                        this.ClassInfoTogglesMap[key] = GUILayout.Toggle(this.ClassInfoTogglesMap[key], content, GUILayout.Height(60 * this.ratio.x), GUILayout.Width((WordDataWindowRect.width - 50) * this.ratio.x));   //因圖片太大，須設定大小                           
                         //------一個單字的架構------
                     }
                 }
@@ -207,7 +221,7 @@ public class EditUI : MonoBehaviour
                         {
                             //------單字庫一個單字的架構------                        
                             GUIContent content = new GUIContent(key.name, key as Texture);  //圖+文字內容
-                            this.WordDataTogglesMap[key] = GUILayout.Toggle(this.WordDataTogglesMap[key], content, GUILayout.Height(70));   //因圖片太大，須設定大小                           
+                            this.WordDataTogglesMap[key] = GUILayout.Toggle(this.WordDataTogglesMap[key], content, GUILayout.Height(60 * this.ratio.x), GUILayout.Width((WordDataWindowRect.width - 50) * this.ratio.x));   //因圖片太大，須設定大小                           
                             //------單字庫一個單字的架構------
                         }
                     }
