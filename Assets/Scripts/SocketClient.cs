@@ -34,7 +34,7 @@ public class SocketClient : MonoBehaviour
     {
         this.process = new Process();
         this.process.StartInfo.FileName = Application.dataPath + @"/SocketServer.exe";
-        this.process.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;  //輸出時記得改Hide
+        this.process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;  //輸出時記得改Hide
         this.process.Start();
     }
 
@@ -122,57 +122,63 @@ public class SocketClient : MonoBehaviour
                 case "RecognizedWord":     //刪除圖片(接收Server發送的刪除單字)
                     if (GameObject.FindObjectOfType<GameModeManager>() != null)
                     {
-                        string[] reWordSplit = reStringSplit[1].Split(',');
-                        if (Int32.Parse(reWordSplit[1]) >= GameDefinition.GameMode_SuccessScore)    //辨識分數大於設定值才能刪除物件
+                        if (GameModeManager.script.canRecognized)
                         {
-                            //將Server傳送的辨識字進行搜尋，如在場景上則進行刪除動作
-                            GameObject tempObj = GameModeManager.script.CurrentActivePictureList.Find((obj) => { return obj.name == reWordSplit[0]; });
-                            if (tempObj != null)
+                            string[] reWordSplit = reStringSplit[1].Split(',');
+                            if (Int32.Parse(reWordSplit[1]) >= GameDefinition.GameMode_SuccessScore)    //辨識分數大於設定值才能刪除物件
                             {
-                                GameModeManager.script.FailHintObject.SetActive(false);
+                                //將Server傳送的辨識字進行搜尋，如在場景上則進行刪除動作
+                                GameObject tempObj = GameModeManager.script.CurrentActivePictureList.Find((obj) => { return obj.name == reWordSplit[0]; });
+                                if (tempObj != null)
+                                {
+                                    GameModeManager.script.FailHintObject.SetActive(false);
 
-                                float dis = Mathf.Abs(GameModeManager.script.SafeScreenrect.top - GameModeManager.script.SafeScreenrect.bottom);
-                                float pos = tempObj.transform.position.y - GameModeManager.script.SafeScreenrect.top;
-                                float p = 1 - Mathf.Abs((pos / dis));
-                                float PositionScore = 100 * p;
+                                    float dis = Mathf.Abs(GameModeManager.script.SafeScreenrect.top - GameModeManager.script.SafeScreenrect.bottom);
+                                    float pos = tempObj.transform.position.y - GameModeManager.script.SafeScreenrect.top;
+                                    float p = 1 - Mathf.Abs((pos / dis));
+                                    float PositionScore = 100 * p;
 
-                                if (!GameModeManager.script.BonusScoreObject.activeSelf)
-                                    GameModeManager.script.BonusScoreObject.SetActive(true);
-                                GameModeManager.script.BonusScoreObject.GetComponent<ScroreController>().Move();
-                                GameModeManager.script.BonusScoreObject.GetComponent<TextMesh>().text = "Bonus：" + Mathf.FloorToInt(PositionScore).ToString();
+                                    if (!GameModeManager.script.BonusScoreObject.activeSelf)
+                                        GameModeManager.script.BonusScoreObject.SetActive(true);
+                                    GameModeManager.script.BonusScoreObject.GetComponent<Text3DController>().Move();
+                                    GameModeManager.script.BonusScoreObject.GetComponent<TextMesh>().text = "Bonus：" + Mathf.FloorToInt(PositionScore).ToString();
 
-                                if (!GameModeManager.script.RecognizedScoreObject.activeSelf)
-                                    GameModeManager.script.RecognizedScoreObject.SetActive(true);
-                                GameModeManager.script.RecognizedScoreObject.GetComponent<ScroreController>().Move();
-                                GameModeManager.script.RecognizedScoreObject.GetComponent<TextMesh>().text = "準確度：" + reWordSplit[1];
+                                    if (!GameModeManager.script.RecognizedScoreObject.activeSelf)
+                                        GameModeManager.script.RecognizedScoreObject.SetActive(true);
+                                    GameModeManager.script.RecognizedScoreObject.GetComponent<Text3DController>().Move();
+                                    GameModeManager.script.RecognizedScoreObject.GetComponent<TextMesh>().text = "準確度：" + reWordSplit[1];
 
-                                GameModeManager.script.CurrentTotalScore += (Int32.Parse(reWordSplit[1]) + Mathf.FloorToInt(PositionScore));
-                                GameModeManager.script.TotalScoreObject.GetComponent<TextMesh>().text = GameModeManager.script.CurrentTotalScore.ToString();
+                                    GameModeManager.script.CurrentTotalScore += (Int32.Parse(reWordSplit[1]) + Mathf.FloorToInt(PositionScore));
+                                    GameModeManager.script.TotalScoreObject.GetComponent<TextMesh>().text = GameModeManager.script.CurrentTotalScore.ToString();
 
-                                tempObj.GetComponent<PictureController>().DestroySelf();
+                                    tempObj.GetComponent<PictureController>().DestroySelf();
+                                }
                             }
-                        }
-                        else
-                        {
-                            GameModeManager.script.BonusScoreObject.SetActive(false);
-                            GameModeManager.script.RecognizedScoreObject.SetActive(false);
+                            else
+                            {
+                                GameModeManager.script.BonusScoreObject.SetActive(false);
+                                GameModeManager.script.RecognizedScoreObject.SetActive(false);
 
-                            if (!GameModeManager.script.FailHintObject.activeSelf)
-                                GameModeManager.script.FailHintObject.SetActive(true);
-                            GameModeManager.script.FailHintObject.GetComponent<ScroreController>().Move();
+                                if (!GameModeManager.script.FailHintObject.activeSelf)
+                                    GameModeManager.script.FailHintObject.SetActive(true);
+                                GameModeManager.script.FailHintObject.GetComponent<Text3DController>().Move();
 
-                            print("準確度過低");
+                                print("準確度過低");
+                            }
                         }
                     }
                     else if (GameObject.FindObjectOfType<TrainModeManager>() != null)
                     {
-                        string[] reWordSplit = reStringSplit[1].Split(',');
-                        CardMove cardMove = TrainModeManager.script.CurrentTargetCardObject.GetComponent<CardMove>();
-                        if (cardMove.isCanRecognized)   //確認可以開始辨識
+                        if (TrainModeManager.script.canRecognized)
                         {
-                            if (cardMove.CardText == reWordSplit[0])    //目前卡片單字與辨識字相同
+                            string[] reWordSplit = reStringSplit[1].Split(',');
+                            CardMove cardMove = TrainModeManager.script.CurrentTargetCardObject.GetComponent<CardMove>();
+                            if (cardMove.isCanRecognized)   //確認可以開始辨識
                             {
-                                TrainModeManager.script.ShowScore(reWordSplit[1]);
+                                if (cardMove.CardText == reWordSplit[0])    //目前卡片單字與辨識字相同
+                                {
+                                    TrainModeManager.script.ShowScore(reWordSplit[1]);
+                                }
                             }
                         }
                     }

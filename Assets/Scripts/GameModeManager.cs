@@ -6,22 +6,30 @@ public class GameModeManager : MonoBehaviour
 {
     public static GameModeManager script;
 
+    public GameObject TimerObject;
+
     public GameObject TotalScoreObject;
     [HideInInspector]
     public int CurrentTotalScore;
+
     public GameObject RecognizedScoreObject;
     public GameObject BonusScoreObject;
     public GameObject FailHintObject;
 
     public GameObject StopWindowObject;
-    private GameObject stopButton;
+    public GameObject StopButton;
+
+    public GameObject EndingScoreObject;
+    public GameObject EndingObject;
 
     public GameObject PicturePrefab;    //生成物件Prefab
     public float CreateTime;            //生成物件間隔
 
     [HideInInspector]
+    public bool canRecognized;
+    [HideInInspector]
     public ScreenRect Screenrect;
-    //[HideInInspector]
+    [HideInInspector]
     public ScreenRect SafeScreenrect;
     [HideInInspector]
     public List<GameObject> CurrentActivePictureList;   //將當前在場景上的圖片物件儲存進容器中
@@ -34,13 +42,21 @@ public class GameModeManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        this.TimerObject.SetActive(true);
+
         this.StopWindowObject.SetActive(false);
+        this.StopButton.SetActive(true);
+
         this.TotalScoreObject.SetActive(false);
         this.RecognizedScoreObject.SetActive(false);
         this.BonusScoreObject.SetActive(false);
 
         this.FailHintObject.GetComponent<TextMesh>().text = "發音不標準！\n加油！";
         this.FailHintObject.SetActive(false);
+
+        this.EndingObject.SetActive(false);
+
+        this.canRecognized = false;
 
         //-----擷取可視螢幕範圍-----
         Vector3 leftbottom = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, 0));
@@ -60,25 +76,46 @@ public class GameModeManager : MonoBehaviour
 
     public void StartCreatePicture()
     {
+        this.canRecognized = true;
         InvokeRepeating("CreatePicture", 0.1f, this.CreateTime);    //產生圖片設定，固定間隔
 
         this.TotalScoreObject.SetActive(true);
         this.TotalScoreObject.GetComponent<TextMesh>().text = this.CurrentTotalScore.ToString();
     }
 
-    public void StopGame(GameObject SendButton)
+    public void StopGame()
     {
+        this.canRecognized = false;
         this.StopWindowObject.SetActive(true);
+        this.StopButton.SetActive(false);
         Time.timeScale = 0.00001f;
-        this.stopButton = SendButton;
-        SendButton.SetActive(false);
     }
 
     public void ResumeGame()
     {
+        this.canRecognized = false;
         this.StopWindowObject.SetActive(false);
-        this.stopButton.SetActive(true);
+        this.StopButton.SetActive(true);
         Time.timeScale = 1;
+    }
+
+    public void EndGame()
+    {
+        this.canRecognized = true;
+
+        CancelInvoke("CreatePicture");
+        foreach (PictureController script in GameObject.FindObjectsOfType<PictureController>())
+            script.DestroySelf();
+
+        this.StopButton.SetActive(false);
+        this.TimerObject.SetActive(false);
+        this.TotalScoreObject.SetActive(false);
+        this.RecognizedScoreObject.SetActive(false);
+        this.BonusScoreObject.SetActive(false);
+        this.FailHintObject.SetActive(false);
+
+        this.EndingScoreObject.GetComponent<TextMesh>().text = "Score：" + this.TotalScoreObject.GetComponent<TextMesh>().text;
+        this.EndingObject.SetActive(true);
     }
 
     // Update is called once per frame

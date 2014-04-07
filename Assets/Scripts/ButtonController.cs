@@ -5,7 +5,7 @@ public class ButtonController : MonoBehaviour
 {
     public ButtonEvent buttonEvent;
 
-    void OnMouseUp()
+    void OnMouseUpAsButton()
     {
         this.ButtonUp(this.buttonEvent);
     }
@@ -19,17 +19,19 @@ public class ButtonController : MonoBehaviour
                 Application.LoadLevel("ReadyGame");
                 break;
             case ButtonEvent.EnterEditMode:
-                Application.LoadLevel("Edit");
+                Application.LoadLevel("EditMode");
                 break;
             case ButtonEvent.EnterTrainMode:
                 Application.LoadLevel("TrainMode");
                 break;
             case ButtonEvent.EnterGameMode:
-                ReadyGameUI script = GameObject.FindObjectOfType<ReadyGameUI>();
-                GameDefinition.GameMode_DownSpeed = script.SetValue_DownSpeed;
-                GameDefinition.GameMode_GameTime = script.SetValue_GameTime * 30;
-                GameDefinition.GameMode_SuccessScore = script.SetValue_SuccessScore;
-                Application.LoadLevel("Game");
+                if (GameObject.FindObjectOfType<ReadyGameUI>() != null)
+                {
+                    ReadyGameUI script = GameObject.FindObjectOfType<ReadyGameUI>();
+                    GameDefinition.GameMode_DownSpeed = script.SetValue_DownSpeed;
+                    GameDefinition.GameMode_SuccessScore = script.SetValue_SuccessScore;
+                }
+                Application.LoadLevel("GameMode");
                 break;
             case ButtonEvent.EnterHome:
                 Time.timeScale = 1;
@@ -40,9 +42,9 @@ public class ButtonController : MonoBehaviour
                 break;
             case ButtonEvent.StopGame:
                 if (GameObject.FindObjectOfType<GameModeManager>() != null)
-                    GameModeManager.script.StopGame(this.gameObject);
+                    GameModeManager.script.StopGame();
                 else if (GameObject.FindObjectOfType<TrainModeManager>() != null)
-                    TrainModeManager.script.StopGame(this.gameObject);
+                    TrainModeManager.script.StopGame();
                 break;
             case ButtonEvent.ResumeGame:
                 if (GameObject.FindObjectOfType<GameModeManager>() != null)

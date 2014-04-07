@@ -9,12 +9,14 @@ public class TrainModeManager : MonoBehaviour
     public GameObject CreateScoreObject;//預設產生分數物件
 
     public GameObject StopWindowObject;
-    private GameObject stopButton;
+    public GameObject StopButton;
 
     [HideInInspector]
     public GameObject CurrentTargetCardObject;  //當前卡片物件
     [HideInInspector]
     public GameObject CurrentTargetScoreObject; //當前分數物件
+    [HideInInspector]
+    public bool canRecognized;
 
     public static TrainModeManager script;
 
@@ -64,23 +66,25 @@ public class TrainModeManager : MonoBehaviour
     /// </summary>
     public void StartTrainMode()
     {
+        this.canRecognized = true;
         this.CurrentTargetCardObject = Instantiate(this.CreateCardObject) as GameObject;
         this.CurrentTargetCardObject.GetComponent<CardMove>().LeftEnter();
 
         this.ArrowObject.SetActive(true);
     }
 
-    public void StopGame(GameObject SendButton)
+    public void StopGame()
     {
+        this.canRecognized = false;
         this.StopWindowObject.SetActive(true);
-        this.stopButton = SendButton;
-        SendButton.SetActive(false);
+        this.StopButton.SetActive(false);
     }
 
     public void ResumeGame()
     {
+        this.canRecognized = true;
         this.StopWindowObject.SetActive(false);
-        this.stopButton.SetActive(true);
+        this.StopButton.SetActive(true);
     }
 
     void Awake()
@@ -91,7 +95,9 @@ public class TrainModeManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        this.canRecognized = false;
         this.StopWindowObject.SetActive(false);
+        this.StopButton.SetActive(true);
         this.ArrowObject.SetActive(false);
     }
 

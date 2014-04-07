@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
 
-[ExecuteInEditMode]
+//[ExecuteInEditMode]
 public class ReadyGameUI : MonoBehaviour
 {
     public GUISkin skin;
@@ -26,7 +26,6 @@ public class ReadyGameUI : MonoBehaviour
     public Vector2 ClassInfoScrollViewPosition; //課程資訊滾輪位置
     public List<Object> ClassInfoObjectList = new List<Object>();   //課程資訊物件清單
 
-    public int SetValue_GameTime;
     public float SetValue_DownSpeed;
     public int SetValue_SuccessScore;
 
@@ -43,7 +42,6 @@ public class ReadyGameUI : MonoBehaviour
         this.EnterTrainModeButton.SetActive(false);
         //場景一開始未選擇課程前，隱藏開始遊戲、練習模式按鈕(防呆)
 
-        this.SetValue_GameTime = (GameDefinition.Slider_GameTimeMax + GameDefinition.Slider_GameTimeMin) / 2;
         this.SetValue_DownSpeed = (GameDefinition.Slider_DownSpeedMax + GameDefinition.Slider_DownSpeedMin) / 2.0f;
         this.SetValue_SuccessScore = (GameDefinition.Slider_SuccessScoreMax + GameDefinition.Slider_SuccessScoreMin) / 2;
 
@@ -205,17 +203,6 @@ public class ReadyGameUI : MonoBehaviour
                         break;
                 }
             }
-
-            //GUILayout.Label("遊戲時間(秒)", this.skin.GetStyle("SettingLable"));
-            //this.SetValue_GameTime = Mathf.FloorToInt(GUILayout.HorizontalSlider(this.SetValue_GameTime, GameDefinition.Slider_GameTimeMin, GameDefinition.Slider_GameTimeMax));
-            //GUILayout.BeginHorizontal();
-            //{
-            //    GUILayout.Label("30");
-            //    GUILayout.FlexibleSpace();
-            //    GUILayout.Label("60");
-            //    GUILayout.FlexibleSpace();
-            //    GUILayout.Label("90");
-            //} GUILayout.EndHorizontal();
         } GUILayout.EndVertical();
     }
 
