@@ -10,22 +10,12 @@ public class ScroreController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        this.transform.position = this.StartPoint;
-        iTween.MoveTo(this.gameObject, iTween.Hash("position", this.EndPoint, "time", this.MoveTime, "easetype", iTween.EaseType.spring));
-
-        //iTween.ColorTo(this.gameObject, iTween.Hash("from", 1.0f, "to", 0, "time", 3));
-        //iTween.ValueTo(this.gameObject, iTween.Hash("from", 1.0f, "to", 0, "time", 3, "easetype", iTween.EaseType.linear, "easetype", iTween.EaseType.linear, "onupdate", "TextColorTo"));
+        this.Move();
     }
 
-    //void TextColorTo(float value)
-    //{
-    //    print(value);
-    //}
-
-    // Update is called once per frame
-    void Update()
+    public void Move()
     {
-        //print(this.gameObject.renderer.material.color);
-
+        this.transform.position = this.StartPoint;
+        iTween.MoveTo(this.gameObject, iTween.Hash("position", this.EndPoint, "time", this.MoveTime, "easetype", iTween.EaseType.spring));
     }
 }

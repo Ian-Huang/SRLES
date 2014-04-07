@@ -6,8 +6,12 @@ public class GameModeManager : MonoBehaviour
 {
     public static GameModeManager script;
 
-    public GameObject ScoreObject;
-    public int CurrentScore;
+    public GameObject TotalScoreObject;
+    [HideInInspector]
+    public int CurrentTotalScore;
+    public GameObject RecognizedScoreObject;
+    public GameObject BonusScoreObject;
+    public GameObject FailHintObject;
 
     public GameObject StopWindowObject;
     private GameObject stopButton;
@@ -17,7 +21,7 @@ public class GameModeManager : MonoBehaviour
 
     [HideInInspector]
     public ScreenRect Screenrect;
-    [HideInInspector]
+    //[HideInInspector]
     public ScreenRect SafeScreenrect;
     [HideInInspector]
     public List<GameObject> CurrentActivePictureList;   //將當前在場景上的圖片物件儲存進容器中
@@ -31,7 +35,12 @@ public class GameModeManager : MonoBehaviour
     void Start()
     {
         this.StopWindowObject.SetActive(false);
-        this.ScoreObject.SetActive(false);
+        this.TotalScoreObject.SetActive(false);
+        this.RecognizedScoreObject.SetActive(false);
+        this.BonusScoreObject.SetActive(false);
+
+        this.FailHintObject.GetComponent<TextMesh>().text = "發音不標準！\n加油！";
+        this.FailHintObject.SetActive(false);
 
         //-----擷取可視螢幕範圍-----
         Vector3 leftbottom = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, 0));
@@ -53,8 +62,8 @@ public class GameModeManager : MonoBehaviour
     {
         InvokeRepeating("CreatePicture", 0.1f, this.CreateTime);    //產生圖片設定，固定間隔
 
-        this.ScoreObject.SetActive(true);
-        this.ScoreObject.GetComponent<TextMesh>().text = this.CurrentScore.ToString();
+        this.TotalScoreObject.SetActive(true);
+        this.TotalScoreObject.GetComponent<TextMesh>().text = this.CurrentTotalScore.ToString();
     }
 
     public void StopGame(GameObject SendButton)
