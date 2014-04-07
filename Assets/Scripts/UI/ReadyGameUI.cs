@@ -31,6 +31,8 @@ public class ReadyGameUI : MonoBehaviour
     public int SetValue_SuccessScore;
 
     private bool isClassinfoOpen = false;
+    private string[] DifficultLevelArrary = new string[] { "簡單", "普通", "困難", "自訂" };   //儲存遊戲難易度名稱陣列
+    private int ChooseDifficultLevelIndex = 1;    //目前被選擇的遊戲難易度序號
     private Vector2 ratio;
 
     void Start()
@@ -114,9 +116,13 @@ public class ReadyGameUI : MonoBehaviour
             GUILayout.Window((int)WindowID.ClassInfoWindow,
                  new Rect(this.ClassInfoWindowRect.x * this.ratio.x, this.ClassInfoWindowRect.y * this.ratio.y, this.ClassInfoWindowRect.width * this.ratio.x, this.ClassInfoWindowRect.height * this.ratio.y),
                  this.ClassInfoWindow, this.CurrentChooseClassName);
+
+            //遊戲設定視窗
+            GUILayout.Window((int)WindowID.GameSettingWindow,
+                new Rect(this.GameSettingWindowRect.x * this.ratio.x, this.GameSettingWindowRect.y * this.ratio.y, this.GameSettingWindowRect.width * this.ratio.x, this.GameSettingWindowRect.height * this.ratio.y),
+                this.GameSettingWindow, "遊戲設定");
         }
-        ////遊戲設定視窗
-        //this.GameSettingWindowRect = GUILayout.Window((int)WindowID.GameSettingWindow, this.GameSettingWindowRect, this.GameSettingWindow, "遊戲設定");
+
     }
 
     /// <summary>
@@ -127,44 +133,89 @@ public class ReadyGameUI : MonoBehaviour
     {
         GUILayout.BeginVertical();
         {
-            GUILayout.Label("遊戲時間(秒)");
-            this.SetValue_GameTime = Mathf.FloorToInt(GUILayout.HorizontalSlider(this.SetValue_GameTime, GameDefinition.Slider_GameTimeMin, GameDefinition.Slider_GameTimeMax));
-            GUILayout.BeginHorizontal();
-            {
-                GUILayout.Label("30");
-                GUILayout.FlexibleSpace();
-                GUILayout.Label("60");
-                GUILayout.FlexibleSpace();
-                GUILayout.Label("90");
-            } GUILayout.EndHorizontal();
-        } GUILayout.EndVertical();
+            GUILayout.Label("物品掉落速度", this.skin.GetStyle("SettingLable"));
 
-        GUILayout.FlexibleSpace();
-
-        GUILayout.BeginVertical();
-        {
-            GUILayout.Label("物品掉落速度");
+            float oldSpeed = this.SetValue_DownSpeed;
             this.SetValue_DownSpeed = GUILayout.HorizontalSlider(this.SetValue_DownSpeed, GameDefinition.Slider_DownSpeedMin, GameDefinition.Slider_DownSpeedMax);
+            if (oldSpeed != this.SetValue_DownSpeed)
+                this.ChooseDifficultLevelIndex = 3; //困難度跳為"自訂"
+
             GUILayout.BeginHorizontal();
             {
-                GUILayout.Label("慢");
+                GUILayout.Label("慢", this.skin.GetStyle("SettingLable"));
                 GUILayout.FlexibleSpace();
-                GUILayout.Label("快");
+                GUILayout.Label("快", this.skin.GetStyle("SettingLable"));
             } GUILayout.EndHorizontal();
         } GUILayout.EndVertical();
 
+        GUILayout.Box("", GUILayout.Height(2.5f * this.ratio.x));
         GUILayout.FlexibleSpace();
 
         GUILayout.BeginVertical();
         {
-            GUILayout.Label("辨識正確分數：" + this.SetValue_SuccessScore);
-            this.SetValue_SuccessScore = Mathf.FloorToInt(GUILayout.HorizontalSlider(this.SetValue_SuccessScore, GameDefinition.Slider_SuccessScoreMin, GameDefinition.Slider_SuccessScoreMax));
             GUILayout.BeginHorizontal();
             {
-                GUILayout.Label(GameDefinition.Slider_SuccessScoreMin.ToString());
+                GUILayout.Label("發音準確度：", this.skin.GetStyle("SettingLable"));
+
+                GUILayout.Label(this.SetValue_SuccessScore.ToString(), this.skin.GetStyle("SettingLable-Pick"));
                 GUILayout.FlexibleSpace();
-                GUILayout.Label(GameDefinition.Slider_SuccessScoreMax.ToString());
             } GUILayout.EndHorizontal();
+
+            int oldScore = this.SetValue_SuccessScore;
+            this.SetValue_SuccessScore = Mathf.FloorToInt(GUILayout.HorizontalSlider(this.SetValue_SuccessScore, GameDefinition.Slider_SuccessScoreMin, GameDefinition.Slider_SuccessScoreMax));
+            if (oldScore != this.SetValue_SuccessScore)
+                this.ChooseDifficultLevelIndex = 3; //困難度跳為"自訂"
+
+            GUILayout.BeginHorizontal();
+            {
+                GUILayout.Label(GameDefinition.Slider_SuccessScoreMin.ToString(), this.skin.GetStyle("SettingLable"));
+                GUILayout.FlexibleSpace();
+                GUILayout.Label(GameDefinition.Slider_SuccessScoreMax.ToString(), this.skin.GetStyle("SettingLable"));
+            } GUILayout.EndHorizontal();
+        } GUILayout.EndVertical();
+
+        GUILayout.Box("", GUILayout.Height(2.5f * this.ratio.x));
+        GUILayout.FlexibleSpace();
+
+        GUILayout.BeginVertical();
+        {
+            GUILayout.Label("難易度", this.skin.GetStyle("SettingLable"));
+
+            int oldIndex = this.ChooseDifficultLevelIndex;
+            this.ChooseDifficultLevelIndex = GUILayout.SelectionGrid(this.ChooseDifficultLevelIndex, this.DifficultLevelArrary, 4);    //產生可選擇的清單
+
+            //判斷被選擇的難易度是否不一樣，會將難易度做更換
+            if (oldIndex != this.ChooseDifficultLevelIndex)
+            {
+                switch (this.ChooseDifficultLevelIndex)
+                {
+                    case 0:
+                        this.SetValue_DownSpeed = GameDefinition.Slider_DownSpeedMin;
+                        this.SetValue_SuccessScore = GameDefinition.Slider_SuccessScoreMin;
+                        break;
+                    case 1:
+                        this.SetValue_DownSpeed = (GameDefinition.Slider_DownSpeedMax + GameDefinition.Slider_DownSpeedMin) / 2.0f;
+                        this.SetValue_SuccessScore = (GameDefinition.Slider_SuccessScoreMax + GameDefinition.Slider_SuccessScoreMin) / 2;
+                        break;
+                    case 2:
+                        this.SetValue_DownSpeed = GameDefinition.Slider_DownSpeedMax;
+                        this.SetValue_SuccessScore = GameDefinition.Slider_SuccessScoreMax;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            //GUILayout.Label("遊戲時間(秒)", this.skin.GetStyle("SettingLable"));
+            //this.SetValue_GameTime = Mathf.FloorToInt(GUILayout.HorizontalSlider(this.SetValue_GameTime, GameDefinition.Slider_GameTimeMin, GameDefinition.Slider_GameTimeMax));
+            //GUILayout.BeginHorizontal();
+            //{
+            //    GUILayout.Label("30");
+            //    GUILayout.FlexibleSpace();
+            //    GUILayout.Label("60");
+            //    GUILayout.FlexibleSpace();
+            //    GUILayout.Label("90");
+            //} GUILayout.EndHorizontal();
         } GUILayout.EndVertical();
     }
 

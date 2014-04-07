@@ -6,6 +6,9 @@ public class GameModeManager : MonoBehaviour
 {
     public static GameModeManager script;
 
+    public GameObject ScoreObject;
+    public int CurrentScore;
+
     public GameObject StopWindowObject;
     private GameObject stopButton;
 
@@ -28,6 +31,7 @@ public class GameModeManager : MonoBehaviour
     void Start()
     {
         this.StopWindowObject.SetActive(false);
+        this.ScoreObject.SetActive(false);
 
         //-----擷取可視螢幕範圍-----
         Vector3 leftbottom = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, 0));
@@ -48,6 +52,9 @@ public class GameModeManager : MonoBehaviour
     public void StartCreatePicture()
     {
         InvokeRepeating("CreatePicture", 0.1f, this.CreateTime);    //產生圖片設定，固定間隔
+
+        this.ScoreObject.SetActive(true);
+        this.ScoreObject.GetComponent<TextMesh>().text = this.CurrentScore.ToString();
     }
 
     public void StopGame(GameObject SendButton)

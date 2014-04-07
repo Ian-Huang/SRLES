@@ -123,7 +123,7 @@ public class SocketClient : MonoBehaviour
                     if (GameObject.FindObjectOfType<GameModeManager>() != null)
                     {
                         string[] reWordSplit = reStringSplit[1].Split(',');
-
+                        print(GameDefinition.GameMode_SuccessScore);
                         if (Int32.Parse(reWordSplit[1]) >= GameDefinition.GameMode_SuccessScore)    //辨識分數大於設定值才能刪除物件
                         {
                             //將Server傳送的辨識字進行搜尋，如在場景上則進行刪除動作
