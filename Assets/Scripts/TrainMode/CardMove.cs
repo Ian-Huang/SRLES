@@ -37,7 +37,7 @@ public class CardMove : MonoBehaviour
         iTween.MoveTo(this.gameObject, iTween.Hash("position", this.MiddlePoint, "time", this.RunTime, "easetype", this.easeType, "oncomplete", "EnterComplete"));
     }
     void EnterComplete()
-    {
+    {        
         GameObject.FindObjectOfType<SocketClient>().SpeakWord(this.CardText);
         this.isCanRecognized = true;
     }

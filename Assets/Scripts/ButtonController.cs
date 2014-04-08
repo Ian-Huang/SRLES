@@ -52,14 +52,17 @@ public class ButtonController : MonoBehaviour
                 else if (GameObject.FindObjectOfType<TrainModeManager>() != null)
                     TrainModeManager.script.ResumeGame();
                 break;
+            case ButtonEvent.SpeakButton:
+                GameObject.FindObjectOfType<SocketClient>().SpeakWord(ABTextureManager.script.ChooseClassWordCollection[TrainModeManager.script.CurrentCardIndex].name);
+                break;
             default:
                 break;
         }
     }
-
+    
     public enum ButtonEvent
     {
         EnterReadyGame = 0, EnterEditMode = 1, ExitGame = 2, EnterGameMode = 3, EnterTrainMode = 4, EnterHome = 5,
-        StopGame = 6, ResumeGame = 7
+        StopGame = 6, ResumeGame = 7,SpeakButton = 8
     }
 }

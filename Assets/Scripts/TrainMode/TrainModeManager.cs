@@ -4,6 +4,7 @@ using System.Collections;
 public class TrainModeManager : MonoBehaviour
 {
     public GameObject ArrowObject;      //箭頭物件
+    public GameObject SpeakButtonObject;
     public int CurrentCardIndex;        //當前圖庫索引號
     public GameObject CreateCardObject; //預設產生卡片物件
     public GameObject CreateScoreObject;//預設產生分數物件
@@ -71,6 +72,7 @@ public class TrainModeManager : MonoBehaviour
         this.CurrentTargetCardObject.GetComponent<CardMove>().LeftEnter();
 
         this.ArrowObject.SetActive(true);
+        this.SpeakButtonObject.SetActive(true);
     }
 
     public void StopGame()
@@ -99,6 +101,7 @@ public class TrainModeManager : MonoBehaviour
         this.StopWindowObject.SetActive(false);
         this.StopButton.SetActive(true);
         this.ArrowObject.SetActive(false);
+        this.SpeakButtonObject.SetActive(false);
     }
 
     // Update is called once per frame
