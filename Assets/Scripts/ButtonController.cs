@@ -40,6 +40,7 @@ public class ButtonController : MonoBehaviour
 
                 else if (GameObject.FindObjectOfType<HomeUI>() != null)
                     GameObject.FindObjectOfType<HomeUI>().EditPasswordWindowObject.SetActive(true);
+                System.Diagnostics.Process.Start("C:/Program Files/Common Files/microsoft shared/ink/TabTip.exe");
                 break;
             case ButtonEvent.EnterTrainMode:
                 Application.LoadLevel("TrainMode");
