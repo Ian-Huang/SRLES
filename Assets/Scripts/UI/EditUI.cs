@@ -7,6 +7,7 @@ using System.Xml;
 public class EditUI : MonoBehaviour
 {
     public GUISkin skin;
+    public GameObject CaptionWindowObject;
 
     //課程清單位置(之後要寫成彈性化相容於各種解析度)
     public Rect WordDataWindowRect = new Rect(575, 20, 250, 250);
@@ -39,6 +40,7 @@ public class EditUI : MonoBehaviour
         StartCoroutine(this.CreateWordDataToggleMap());
 
         this.ArrowObject.SetActive(false);
+        this.CaptionWindowObject.SetActive(false);
     }
 
     void Update()
@@ -105,25 +107,26 @@ public class EditUI : MonoBehaviour
     void OnGUI()
     {
         GUI.skin = this.skin;
-
-        //課程清單視窗
-        GUILayout.Window((int)WindowID.ClassListWindow,
-            new Rect(this.ClassListWindowRect.x * this.ratio.x, this.ClassListWindowRect.y * this.ratio.y, this.ClassListWindowRect.width * this.ratio.x, this.ClassListWindowRect.height * this.ratio.y),
-            this.ClassListWindow, "課程清單");
-
-        if (this.isEditinfoOpen)
+        if (!this.CaptionWindowObject.activeSelf)
         {
-            //單字庫視窗
-            GUILayout.Window((int)WindowID.WordDataWindow,
-                new Rect(this.WordDataWindowRect.x * this.ratio.x, this.WordDataWindowRect.y * this.ratio.y, this.WordDataWindowRect.width * this.ratio.x, this.WordDataWindowRect.height * this.ratio.y),
-                this.WordDataWindow, "單字庫");
+            //課程清單視窗
+            GUILayout.Window((int)WindowID.ClassListWindow,
+                new Rect(this.ClassListWindowRect.x * this.ratio.x, this.ClassListWindowRect.y * this.ratio.y, this.ClassListWindowRect.width * this.ratio.x, this.ClassListWindowRect.height * this.ratio.y),
+                this.ClassListWindow, "課程清單");
 
-            //課程資訊視窗
-            GUILayout.Window((int)WindowID.ClassInfoWindow,
-                new Rect(this.ClassInfoWindowRect.x * this.ratio.x, this.ClassInfoWindowRect.y * this.ratio.y, this.ClassInfoWindowRect.width * this.ratio.x, this.ClassInfoWindowRect.height * this.ratio.y),
-                this.ClassInfoWindow, this.CurrentEditClassName, GUILayout.MaxWidth(this.ClassInfoWindowRect.width * this.ratio.x));
+            if (this.isEditinfoOpen)
+            {
+                //單字庫視窗
+                GUILayout.Window((int)WindowID.WordDataWindow,
+                    new Rect(this.WordDataWindowRect.x * this.ratio.x, this.WordDataWindowRect.y * this.ratio.y, this.WordDataWindowRect.width * this.ratio.x, this.WordDataWindowRect.height * this.ratio.y),
+                    this.WordDataWindow, "單字庫");
+
+                //課程資訊視窗
+                GUILayout.Window((int)WindowID.ClassInfoWindow,
+                    new Rect(this.ClassInfoWindowRect.x * this.ratio.x, this.ClassInfoWindowRect.y * this.ratio.y, this.ClassInfoWindowRect.width * this.ratio.x, this.ClassInfoWindowRect.height * this.ratio.y),
+                    this.ClassInfoWindow, this.CurrentEditClassName, GUILayout.MaxWidth(this.ClassInfoWindowRect.width * this.ratio.x));
+            }
         }
-
         //提醒視窗
         //this.HintWindowRect = GUILayout.Window(100, this.HintWindowRect, this.HintWindow, "提醒");
     }

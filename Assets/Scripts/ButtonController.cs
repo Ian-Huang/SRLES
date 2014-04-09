@@ -94,6 +94,18 @@ public class ButtonController : MonoBehaviour
                 else if (GameObject.FindObjectOfType<HomeUI>() != null)
                     GameObject.FindObjectOfType<HomeUI>().EditPasswordWindowObject.SetActive(false);
                 break;
+            case ButtonEvent.CaptionWindowOpen:
+                if (GameObject.FindObjectOfType<EditUI>() != null)
+                    GameObject.FindObjectOfType<EditUI>().CaptionWindowObject.SetActive(true);
+                else if (GameObject.FindObjectOfType<ReadyGameUI>() != null)
+                    GameObject.FindObjectOfType<ReadyGameUI>().CaptionWindowObject.SetActive(true);
+                break;
+            case ButtonEvent.CaptionWindowClose:
+                if (GameObject.FindObjectOfType<EditUI>() != null)
+                    GameObject.FindObjectOfType<EditUI>().CaptionWindowObject.SetActive(false);
+                else if (GameObject.FindObjectOfType<ReadyGameUI>() != null)
+                    GameObject.FindObjectOfType<ReadyGameUI>().CaptionWindowObject.SetActive(false);
+                break;
             default:
                 break;
         }
@@ -105,6 +117,7 @@ public class ButtonController : MonoBehaviour
         StopGame = 6, ResumeGame = 7,
         TrainModeSpeakButton = 8, TrainModeRightArrow = 9, TrainModeLeftArrow = 10,
         AddWordtoClassButton = 11, DeleteWordfromClassButton = 12,
-        EditPasswordCancel = 13
+        EditPasswordCancel = 13,
+        CaptionWindowOpen = 14, CaptionWindowClose = 15
     }
 }

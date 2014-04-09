@@ -8,6 +8,7 @@ public class Text3DController : MonoBehaviour
     public float MoveTime;
     public float DelayTime;
     public bool isStartMove = true;
+    public iTween.EaseType easeType = iTween.EaseType.spring;
 
     // Use this for initialization
     void Start()
@@ -19,6 +20,6 @@ public class Text3DController : MonoBehaviour
     public void Move()
     {
         this.transform.position = this.StartPoint;
-        iTween.MoveTo(this.gameObject, iTween.Hash("position", this.EndPoint, "time", this.MoveTime, "delay", this.DelayTime, "easetype", iTween.EaseType.spring));
+        iTween.MoveTo(this.gameObject, iTween.Hash("position", this.EndPoint, "time", this.MoveTime, "delay", this.DelayTime, "easetype", this.easeType));
     }
 }
