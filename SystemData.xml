@@ -1,8 +1,6 @@
 <ClassList>
-  <Class1>
-    <snake />
-    <zebra />
-    <cake />
+  <Class12>
+    <book />
     <goat />
     <lion />
     <strawberry />
@@ -10,7 +8,12 @@
     <milk />
     <pig />
     <star />
-  </Class1>
+    <apple />
+    <zebra />
+    <cake />
+    <bird />
+    <banana />
+  </Class12>
   <未命名課程2>
     <apple />
     <dog />
@@ -28,12 +31,8 @@
     <strawberry />
     <banana />
   </未命名課程3>
-  <未命名課程1 />
   <未命名課程4 />
-  <未命名課程5 />
   <未命名課程6 />
   <未命名課程7 />
-  <未命名課程8 />
   <未命名課程9 />
-  <未命名課程10 />
 </ClassList>

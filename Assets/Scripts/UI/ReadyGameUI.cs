@@ -69,8 +69,11 @@ public class ReadyGameUI : MonoBehaviour
         //將XML File的課程清單載入到課程名稱清單(ClassNameList)
         this.ClassNameList.Clear();
         foreach (XmlNode node in XmlManager.script.ClassListNode.ChildNodes)
-            this.ClassNameList.Add(node.Name);
-
+        {
+            //排除沒有單字的課程
+            if (node.ChildNodes.Count > 0)
+                this.ClassNameList.Add(node.Name);
+        }
         //將所有的課程清單名稱存入矩陣中
         this.classListArrary = new string[this.ClassNameList.Count];
         this.ClassNameList.CopyTo(classListArrary, 0);
@@ -222,7 +225,7 @@ public class ReadyGameUI : MonoBehaviour
                     {
                         //------一個單字的架構------                        
                         GUIContent content = new GUIContent(key.name, key as Texture);  //圖+文字內容
-                        GUILayout.Label(content, GUILayout.Height(70 * this.ratio.x));
+                        GUILayout.Label(content, GUILayout.Height(60 * this.ratio.x), GUILayout.Width((ClassInfoWindowRect.width - 50) * this.ratio.x));
                         //------一個單字的架構------
                     }
                 }

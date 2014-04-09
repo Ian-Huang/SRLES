@@ -28,6 +28,7 @@ public class EditUI : MonoBehaviour
     public string CurrentEditClassName;         //當前選擇編輯的課程名稱
 
     public bool isEditinfoOpen = false;
+    public GameObject ArrowObject;
     private Vector2 ratio;
 
     void Start()
@@ -36,6 +37,8 @@ public class EditUI : MonoBehaviour
         StartCoroutine(this.CreateClassListToggleMap());
         //先行載入單字庫資訊
         StartCoroutine(this.CreateWordDataToggleMap());
+
+        this.ArrowObject.SetActive(false);
     }
 
     void Update()
@@ -118,11 +121,11 @@ public class EditUI : MonoBehaviour
             //課程資訊視窗
             GUILayout.Window((int)WindowID.ClassInfoWindow,
                 new Rect(this.ClassInfoWindowRect.x * this.ratio.x, this.ClassInfoWindowRect.y * this.ratio.y, this.ClassInfoWindowRect.width * this.ratio.x, this.ClassInfoWindowRect.height * this.ratio.y),
-                this.ClassInfoWindow, this.CurrentEditClassName);
+                this.ClassInfoWindow, this.CurrentEditClassName, GUILayout.MaxWidth(this.ClassInfoWindowRect.width * this.ratio.x));
         }
 
         //提醒視窗
-        //this.HintWindowRect = GUILayout.Window(1, this.HintWindowRect, this.HintWindow, "提醒");
+        //this.HintWindowRect = GUILayout.Window(100, this.HintWindowRect, this.HintWindow, "提醒");
     }
 
     /// <summary>
@@ -164,31 +167,22 @@ public class EditUI : MonoBehaviour
 
         GUILayout.BeginHorizontal();
         {
-            if (GUILayout.Button("儲存課程"))
-            {
-                Dictionary<Object, bool> tempDir = new Dictionary<Object, bool>(this.ClassInfoTogglesMap);  //不可直接對Dictionary做讀取，須建立一個暫存
-                List<string> wordList = new List<string>();
+            //if (GUILayout.Button("儲存課程"))
+            //{
+            //    Dictionary<Object, bool> tempDir = new Dictionary<Object, bool>(this.ClassInfoTogglesMap);  //不可直接對Dictionary做讀取，須建立一個暫存
+            //    List<string> wordList = new List<string>();
 
-                //將目前所選擇單字儲存至wordList
-                foreach (var key in tempDir.Keys)
-                    wordList.Add(key.name);
+            //    //將目前所選擇單字儲存至wordList
+            //    foreach (var key in tempDir.Keys)
+            //        wordList.Add(key.name);
 
-                //新增單字資訊至XML File
-                XmlManager.script.CreateNewWordToClass(this.CurrentEditClassName, wordList.ToArray());
+            //    //新增單字資訊至XML File
+            //    XmlManager.script.CreateNewWordToClass(this.CurrentEditClassName, wordList.ToArray());
 
-            }
+            //}
             if (GUILayout.Button("刪除單字"))
             {
-                Dictionary<Object, bool> tempDir = new Dictionary<Object, bool>(this.ClassInfoTogglesMap);  //不可直接對Dictionary做讀取，須建立一個暫存
-                //確認對照表，將被勾選的物件刪除
-                foreach (var key in tempDir.Keys)
-                {
-                    if (this.ClassInfoTogglesMap[key])
-                    {
-                        //將ClassInfoTogglesMap中對應的課程刪除
-                        this.ClassInfoTogglesMap.Remove(key);
-                    }
-                }
+                this.DeleteWordfromClass();
             }
         }
         GUILayout.EndHorizontal();
@@ -232,19 +226,7 @@ public class EditUI : MonoBehaviour
         //將在單字庫所選的單字新增至目前編輯的課程
         if (GUILayout.Button("新增至課程"))
         {
-            Dictionary<Object, bool> tempDir = new Dictionary<Object, bool>(this.WordDataTogglesMap);  //不可直接對Dictionary做讀取，須建立一個暫存
-
-            //確認對照表，將被勾選的物件新增至課程
-            foreach (var key in tempDir.Keys)
-            {
-                if (this.WordDataTogglesMap[key])
-                {
-                    if (!this.ClassInfoTogglesMap.ContainsKey(key))     //確認目前的課程是否已經有選擇的單字
-                        this.ClassInfoTogglesMap.Add(key, false);
-                    //將單字庫被選擇的狀態取消
-                    this.WordDataTogglesMap[key] = false;
-                }
-            }
+            this.AddWordtoClass();
         }
     }
 
@@ -268,6 +250,7 @@ public class EditUI : MonoBehaviour
                     if (GUILayout.Button("編輯"))
                     {
                         this.isEditinfoOpen = true;
+                        this.ArrowObject.SetActive(true);
                         this.CurrentEditClassName = this.ModifyClassNameString = key;
                         StartCoroutine(this.CreateClassInfoTogglesMap());
                     }
@@ -346,6 +329,67 @@ public class EditUI : MonoBehaviour
             default:
                 break;
         }
+    }
+
+    public void AddWordtoClass()
+    {
+        Dictionary<Object, bool> tempDir = new Dictionary<Object, bool>(this.WordDataTogglesMap);  //不可直接對Dictionary做讀取，須建立一個暫存
+        int count = 0;
+
+        //確認對照表，將被勾選的物件新增至課程
+        foreach (var key in tempDir.Keys)
+        {
+            if (this.WordDataTogglesMap[key])
+            {
+                if (!this.ClassInfoTogglesMap.ContainsKey(key))     //確認目前的課程是否已經有選擇的單字
+                {
+                    this.ClassInfoTogglesMap.Add(key, false);
+                    count++;
+                }
+                //將單字庫被選擇的狀態取消
+                this.WordDataTogglesMap[key] = false;
+            }
+        }
+        if (count > 0)
+        {
+            this.ClassInfoScrollViewPosition.y = Mathf.Infinity;
+            this.SaveClassInfo();
+        }
+    }
+
+    public void DeleteWordfromClass()
+    {
+        Dictionary<Object, bool> tempDir = new Dictionary<Object, bool>(this.ClassInfoTogglesMap);  //不可直接對Dictionary做讀取，須建立一個暫存
+        int count = 0;
+
+        //確認對照表，將被勾選的物件刪除
+        foreach (var key in tempDir.Keys)
+        {
+            if (this.ClassInfoTogglesMap[key])
+            {
+                //將ClassInfoTogglesMap中對應的課程刪除
+                this.ClassInfoTogglesMap.Remove(key);
+                count++;
+            }
+        }
+
+        if (count > 0)
+        {
+            this.SaveClassInfo();
+        }
+    }
+
+    void SaveClassInfo()
+    {
+        Dictionary<Object, bool> tempDir = new Dictionary<Object, bool>(this.ClassInfoTogglesMap);  //不可直接對Dictionary做讀取，須建立一個暫存
+        List<string> wordList = new List<string>();
+
+        //將目前所選擇單字儲存至wordList
+        foreach (var key in tempDir.Keys)
+            wordList.Add(key.name);
+
+        //新增單字資訊至XML File
+        XmlManager.script.CreateNewWordToClass(this.CurrentEditClassName, wordList.ToArray());
     }
 
     public enum WindowID
