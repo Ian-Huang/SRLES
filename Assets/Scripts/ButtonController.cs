@@ -34,7 +34,12 @@ public class ButtonController : MonoBehaviour
                 Application.LoadLevel("ReadyGame");
                 break;
             case ButtonEvent.EnterEditMode:
-                Application.LoadLevel("EditMode");
+                //Application.LoadLevel("EditMode");
+                if (GameObject.FindObjectOfType<ReadyGameUI>() != null)
+                    GameObject.FindObjectOfType<ReadyGameUI>().EditPasswordWindowObject.SetActive(true);
+
+                else if (GameObject.FindObjectOfType<HomeUI>() != null)
+                    GameObject.FindObjectOfType<HomeUI>().EditPasswordWindowObject.SetActive(true);
                 break;
             case ButtonEvent.EnterTrainMode:
                 Application.LoadLevel("TrainMode");
@@ -82,6 +87,13 @@ public class ButtonController : MonoBehaviour
             case ButtonEvent.DeleteWordfromClassButton:
                 GameObject.FindObjectOfType<EditUI>().DeleteWordfromClass();
                 break;
+            case ButtonEvent.EditPasswordCancel:
+                if (GameObject.FindObjectOfType<ReadyGameUI>() != null)
+                    GameObject.FindObjectOfType<ReadyGameUI>().EditPasswordWindowObject.SetActive(false);
+
+                else if (GameObject.FindObjectOfType<HomeUI>() != null)
+                    GameObject.FindObjectOfType<HomeUI>().EditPasswordWindowObject.SetActive(false);
+                break;
             default:
                 break;
         }
@@ -92,6 +104,7 @@ public class ButtonController : MonoBehaviour
         EnterReadyGame = 0, EnterEditMode = 1, ExitGame = 2, EnterGameMode = 3, EnterTrainMode = 4, EnterHome = 5,
         StopGame = 6, ResumeGame = 7,
         TrainModeSpeakButton = 8, TrainModeRightArrow = 9, TrainModeLeftArrow = 10,
-        AddWordtoClassButton = 11, DeleteWordfromClassButton = 12
+        AddWordtoClassButton = 11, DeleteWordfromClassButton = 12,
+        EditPasswordCancel = 13
     }
 }

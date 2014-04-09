@@ -80,6 +80,7 @@ public class TrainModeManager : MonoBehaviour
         this.canRecognized = false;
         this.StopWindowObject.SetActive(true);
         this.StopButton.SetActive(false);
+        Time.timeScale = 0.00001f;
     }
 
     public void ResumeGame()
@@ -87,6 +88,7 @@ public class TrainModeManager : MonoBehaviour
         this.canRecognized = true;
         this.StopWindowObject.SetActive(false);
         this.StopButton.SetActive(true);
+        Time.timeScale = 1;
     }
 
     void Awake()

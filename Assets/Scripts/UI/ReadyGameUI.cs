@@ -10,6 +10,7 @@ public class ReadyGameUI : MonoBehaviour
 
     public GameObject EnterGameModeButton;
     public GameObject EnterTrainModeButton;
+    public GameObject EditPasswordWindowObject;
 
     //課程清單位置(之後要寫成彈性化相容於各種解析度)
     public Rect ClassListWindowRect = new Rect(25, 20, 250, 250);
@@ -40,6 +41,7 @@ public class ReadyGameUI : MonoBehaviour
         this.ChooseClassIndex = -1;
         this.EnterGameModeButton.SetActive(false);
         this.EnterTrainModeButton.SetActive(false);
+        this.EditPasswordWindowObject.SetActive(false);
         //場景一開始未選擇課程前，隱藏開始遊戲、練習模式按鈕(防呆)
 
         this.SetValue_DownSpeed = (GameDefinition.Slider_DownSpeedMax + GameDefinition.Slider_DownSpeedMin) / 2.0f;
@@ -106,24 +108,26 @@ public class ReadyGameUI : MonoBehaviour
     {
         GUI.skin = this.skin;
 
-        //課程清單視窗
-        GUILayout.Window((int)WindowID.ClassListWindow,
-            new Rect(this.ClassListWindowRect.x * this.ratio.x, this.ClassListWindowRect.y * this.ratio.y, this.ClassListWindowRect.width * this.ratio.x, this.ClassListWindowRect.height * this.ratio.y),
-            this.ClassListWindow, "課程清單");
-
-        if (this.isClassinfoOpen)
+        if (!EditPasswordWindowObject.activeSelf)
         {
-            //課程資訊視窗
-            GUILayout.Window((int)WindowID.ClassInfoWindow,
-                 new Rect(this.ClassInfoWindowRect.x * this.ratio.x, this.ClassInfoWindowRect.y * this.ratio.y, this.ClassInfoWindowRect.width * this.ratio.x, this.ClassInfoWindowRect.height * this.ratio.y),
-                 this.ClassInfoWindow, this.CurrentChooseClassName);
+            //課程清單視窗
+            GUILayout.Window((int)WindowID.ClassListWindow,
+                new Rect(this.ClassListWindowRect.x * this.ratio.x, this.ClassListWindowRect.y * this.ratio.y, this.ClassListWindowRect.width * this.ratio.x, this.ClassListWindowRect.height * this.ratio.y),
+                this.ClassListWindow, "課程清單");
 
-            //遊戲設定視窗
-            GUILayout.Window((int)WindowID.GameSettingWindow,
-                new Rect(this.GameSettingWindowRect.x * this.ratio.x, this.GameSettingWindowRect.y * this.ratio.y, this.GameSettingWindowRect.width * this.ratio.x, this.GameSettingWindowRect.height * this.ratio.y),
-                this.GameSettingWindow, "遊戲設定");
+            if (this.isClassinfoOpen)
+            {
+                //課程資訊視窗
+                GUILayout.Window((int)WindowID.ClassInfoWindow,
+                     new Rect(this.ClassInfoWindowRect.x * this.ratio.x, this.ClassInfoWindowRect.y * this.ratio.y, this.ClassInfoWindowRect.width * this.ratio.x, this.ClassInfoWindowRect.height * this.ratio.y),
+                     this.ClassInfoWindow, this.CurrentChooseClassName);
+
+                //遊戲設定視窗
+                GUILayout.Window((int)WindowID.GameSettingWindow,
+                    new Rect(this.GameSettingWindowRect.x * this.ratio.x, this.GameSettingWindowRect.y * this.ratio.y, this.GameSettingWindowRect.width * this.ratio.x, this.GameSettingWindowRect.height * this.ratio.y),
+                    this.GameSettingWindow, "遊戲設定");
+            }
         }
-
     }
 
     /// <summary>
