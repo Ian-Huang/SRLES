@@ -23,13 +23,13 @@ public class GameModeManager : MonoBehaviour
     public GameObject EndingObject;
 
     public GameObject PicturePrefab;    //生成物件Prefab
-    public float CreateTime;            //生成物件間隔
+    public float CreatePositionDistance;            //生成物件間隔
 
     [HideInInspector]
     public bool canRecognized;
     [HideInInspector]
     public ScreenRect Screenrect;
-    [HideInInspector]
+   // [HideInInspector]
     public ScreenRect SafeScreenrect;
     [HideInInspector]
     public List<GameObject> CurrentActivePictureList;   //將當前在場景上的圖片物件儲存進容器中
@@ -69,7 +69,7 @@ public class GameModeManager : MonoBehaviour
 
         this.SafeScreenrect.top = righttop.y + 6;
         this.SafeScreenrect.bottom = leftbottom.y;
-        this.SafeScreenrect.left = leftbottom.x + 5;
+        this.SafeScreenrect.left = leftbottom.x + 5 + 25;
         this.SafeScreenrect.right = righttop.x - 5;
         //-----擷取可視螢幕範圍-----
     }
@@ -77,7 +77,7 @@ public class GameModeManager : MonoBehaviour
     public void StartCreatePicture()
     {
         this.canRecognized = true;
-        InvokeRepeating("CreatePicture", 0.1f, this.CreateTime);    //產生圖片設定，固定間隔
+        InvokeRepeating("CreatePicture", 0.1f, 0.1f);    //產生圖片設定，固定檢查間隔
 
         this.TotalScoreObject.SetActive(true);
         this.TotalScoreObject.GetComponent<TextMesh>().text = this.CurrentTotalScore.ToString();
@@ -118,24 +118,26 @@ public class GameModeManager : MonoBehaviour
         this.EndingObject.SetActive(true);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (ABTextureManager.script.ABRoadFinish)
-        {
-
-        }
-    }
-
     /// <summary>
-    /// 產生圖片設定，固定間隔
+    /// 產生圖片設定，固定檢查間隔
     /// </summary>
     void CreatePicture()
     {
-        //設定產生位置(不能超出螢幕可視範圍)
-        Vector3 createPos = new Vector3(Random.Range(this.SafeScreenrect.left, this.SafeScreenrect.right), this.SafeScreenrect.top, 0);
-
-        Instantiate(this.PicturePrefab, createPos, this.PicturePrefab.transform.rotation);
+        if (this.CurrentActivePictureList.Count == 0)
+        {
+            //設定產生位置(不能超出螢幕可視範圍)
+            Vector3 createPos = new Vector3(Random.Range(this.SafeScreenrect.left, this.SafeScreenrect.right), this.SafeScreenrect.top, 0);
+            Instantiate(this.PicturePrefab, createPos, this.PicturePrefab.transform.rotation);
+        }
+        else
+        {
+            if (Mathf.Abs(this.CurrentActivePictureList[this.CurrentActivePictureList.Count - 1].transform.position.y - this.SafeScreenrect.top) > this.CreatePositionDistance)
+            {
+                //設定產生位置(不能超出螢幕可視範圍)
+                Vector3 createPos = new Vector3(Random.Range(this.SafeScreenrect.left, this.SafeScreenrect.right), this.SafeScreenrect.top, 0);
+                Instantiate(this.PicturePrefab, createPos, this.PicturePrefab.transform.rotation);
+            }
+        }
     }
 
     [System.Serializable]

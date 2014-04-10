@@ -13,8 +13,19 @@ public class PictureController : MonoBehaviour
 
         this.DownSpeed = GameDefinition.GameMode_DownSpeed;
 
-        Random.seed = (int)Time.time;
-        int num = Random.Range(0, ABTextureManager.script.ChooseClassWordCollection.Count);
+        int num;
+
+        //確保不連續出現相同物件
+        if (GameModeManager.script.CurrentActivePictureList.Count > 0)
+        {
+            do
+            {
+                num = Random.Range(0, ABTextureManager.script.ChooseClassWordCollection.Count);
+            } while (GameModeManager.script.CurrentActivePictureList[GameModeManager.script.CurrentActivePictureList.Count - 1].name == ABTextureManager.script.ChooseClassWordCollection[num].name && ABTextureManager.script.ChooseClassWordCollection.Count > 1);
+        }
+        else
+            num = Random.Range(0, ABTextureManager.script.ChooseClassWordCollection.Count);
+
         this.gameObject.name = ABTextureManager.script.ChooseClassWordCollection[num].name;      //將物件名稱命名為辨識物名
         this.renderer.material.mainTexture = ABTextureManager.script.ChooseClassWordCollection[num] as Texture;
         GameModeManager.script.CurrentActivePictureList.Add(this.gameObject);   //將物件儲存到容器

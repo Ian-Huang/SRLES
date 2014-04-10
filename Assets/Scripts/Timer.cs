@@ -6,6 +6,7 @@ public class Timer : MonoBehaviour
     public Vector3 StartPoint;
     public Vector3 EndPoint;
     public float MoveTime;
+    public float DelayTime;
 
     public GameObject TimerTextObject;
     private int GameTime;
@@ -22,7 +23,7 @@ public class Timer : MonoBehaviour
     public void Move()
     {
         this.transform.position = this.StartPoint;
-        iTween.MoveTo(this.gameObject, iTween.Hash("position", this.EndPoint, "time", this.MoveTime, "easetype", iTween.EaseType.spring));
+        iTween.MoveTo(this.gameObject, iTween.Hash("position", this.EndPoint, "time", this.MoveTime, "delay", this.DelayTime, "easetype", iTween.EaseType.spring));
     }
 
     void TimerFunction()

@@ -12,6 +12,10 @@ public class TrainModeManager : MonoBehaviour
     public GameObject StopWindowObject;
     public GameObject StopButton;
 
+    public GameObject ScoreBarObject;
+
+    public AudioClip CorrectAudio;
+
     [HideInInspector]
     public GameObject CurrentTargetCardObject;  //當前卡片物件
     [HideInInspector]
@@ -60,6 +64,9 @@ public class TrainModeManager : MonoBehaviour
 
         this.CurrentTargetScoreObject = Instantiate(this.CreateScoreObject) as GameObject;
         this.CurrentTargetScoreObject.GetComponent<TextMesh>().text = score;
+
+        this.audio.clip = this.CorrectAudio;
+        this.audio.Play();
     }
 
     /// <summary>
@@ -73,6 +80,7 @@ public class TrainModeManager : MonoBehaviour
 
         this.ArrowObject.SetActive(true);
         this.SpeakButtonObject.SetActive(true);
+        this.ScoreBarObject.SetActive(true);
     }
 
     public void StopGame()
@@ -104,6 +112,7 @@ public class TrainModeManager : MonoBehaviour
         this.StopButton.SetActive(true);
         this.ArrowObject.SetActive(false);
         this.SpeakButtonObject.SetActive(false);
+        this.ScoreBarObject.SetActive(false);
     }
 
     // Update is called once per frame

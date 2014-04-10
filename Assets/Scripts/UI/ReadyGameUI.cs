@@ -158,16 +158,15 @@ public class ReadyGameUI : MonoBehaviour
             } GUILayout.EndHorizontal();
         } GUILayout.EndVertical();
 
-        GUILayout.Box("", GUILayout.Height(2.5f * this.ratio.x));
+        //GUILayout.Box("", GUILayout.Height(2.5f * this.ratio.x));
         GUILayout.FlexibleSpace();
 
         GUILayout.BeginVertical();
         {
             GUILayout.BeginHorizontal();
             {
-                GUILayout.Label("發音準確度：", this.skin.GetStyle("SettingLable"));
-
-                GUILayout.Label(this.SetValue_SuccessScore.ToString(), this.skin.GetStyle("SettingLable-Pick"));
+                GUILayout.Label("發音準確度", this.skin.GetStyle("SettingLable"));
+                //GUILayout.Label(this.SetValue_SuccessScore.ToString(), this.skin.GetStyle("SettingLable-Pick"));
                 GUILayout.FlexibleSpace();
             } GUILayout.EndHorizontal();
 
@@ -178,9 +177,9 @@ public class ReadyGameUI : MonoBehaviour
 
             GUILayout.BeginHorizontal();
             {
-                GUILayout.Label(GameDefinition.Slider_SuccessScoreMin.ToString(), this.skin.GetStyle("SettingLable"));
+                GUILayout.Label("低", this.skin.GetStyle("SettingLable"));
                 GUILayout.FlexibleSpace();
-                GUILayout.Label(GameDefinition.Slider_SuccessScoreMax.ToString(), this.skin.GetStyle("SettingLable"));
+                GUILayout.Label("高", this.skin.GetStyle("SettingLable"));
             } GUILayout.EndHorizontal();
         } GUILayout.EndVertical();
 
