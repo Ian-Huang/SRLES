@@ -1,40 +1,38 @@
 <ClassList>
-  <Class12>
-    <book />
-    <goat />
-    <lion />
-    <strawberry />
-    <hamburger />
-    <milk />
-    <pig />
-    <star />
+  <Class_food>
     <apple />
-    <zebra />
-    <cake />
-    <bird />
     <banana />
-  </Class12>
-  <未命名課程2>
-    <apple />
-    <dog />
-    <goat />
-    <lemon />
-    <zebra />
-  </未命名課程2>
-  <未命名課程3>
-    <apple />
-    <crab />
-    <frog />
+    <cake />
+    <hamburger />
     <icecream />
-    <monkey />
+    <milk />
     <pizza />
     <strawberry />
-    <banana />
-  </未命名課程3>
-  <未命名課程4>
-    <apple />
-  </未命名課程4>
-  <未命名課程6 />
-  <未命名課程7 />
-  <未命名課程9 />
+  </Class_food>
+  <動物單元>
+    <cow />
+    <chicken />
+    <mouse />
+    <cat />
+    <bird />
+    <bear />
+    <dog />
+    <fish />
+    <giraffe />
+    <goat />
+    <lion />
+    <monkey />
+    <pig />
+    <rabbit />
+    <sheep />
+    <snake />
+    <tiger />
+    <zebra />
+  </動物單元>
+  <球類>
+    <baseball />
+    <basketball />
+    <soccer />
+    <tennis />
+  </球類>
 </ClassList>
